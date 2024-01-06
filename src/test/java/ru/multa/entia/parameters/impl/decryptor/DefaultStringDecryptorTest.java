@@ -101,7 +101,7 @@ class DefaultStringDecryptorTest {
         ).isTrue();
     }
 
-    @RepeatedTest(1)
+    @RepeatedTest(100)
     void shouldCheckDecryption() {
         String expectedOriginal = Faker.str_().random(30, 50);
         String password = Faker.str_().random(5, 10);

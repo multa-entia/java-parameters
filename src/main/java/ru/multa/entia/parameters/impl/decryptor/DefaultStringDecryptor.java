@@ -16,23 +16,19 @@ public class DefaultStringDecryptor implements Decryptor<String, Result<String>>
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.PASSWORD_IS_NULL, "parameters:decryptor.jasypt-string.password-is-null");
-        CR.update(Code.PASSWORD_IS_EMPTY, "parameters:decryptor.jasypt-string.password-is-empty");
-        CR.update(Code.DECRYPTION_ERROR, "parameters:decryptor.jasypt-string.decryption-error");
+        CR.update(Code.PASSWORD_IS_NULL, "parameters:decryptor.string.default:password-is-null");
+        CR.update(Code.PASSWORD_IS_EMPTY, "parameters:decryptor.string.default:password-is-empty");
+        CR.update(Code.DECRYPTION_ERROR, "parameters:decryptor.string.default:decryption-error");
     }
 
     private final StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 
     public static Result<DefaultStringDecryptor> create(final String password) {
-        if (password == null) {
-            return DefaultResultBuilder.<DefaultStringDecryptor>fail(CR.get(Code.PASSWORD_IS_NULL));
-        }
-
-        if (password.isEmpty()) {
-            return DefaultResultBuilder.<DefaultStringDecryptor>fail(CR.get(Code.PASSWORD_IS_EMPTY));
-        }
-
-        return DefaultResultBuilder.<DefaultStringDecryptor>ok(new DefaultStringDecryptor(password));
+        return DefaultResultBuilder.<DefaultStringDecryptor>computeFromCodes(
+                () -> {return new DefaultStringDecryptor(password);},
+                () -> {return password == null ? CR.get(Code.PASSWORD_IS_NULL) : null;},
+                () -> {return password.isEmpty() ? CR.get(Code.PASSWORD_IS_EMPTY) : null;}
+        );
     }
 
     private DefaultStringDecryptor(final String password) {
@@ -40,9 +36,9 @@ public class DefaultStringDecryptor implements Decryptor<String, Result<String>>
     }
 
     @Override
-    public Result<String> decrypt(final String input) {
+    public Result<String> decrypt(final String encrypted) {
         try {
-            return DefaultResultBuilder.<String>ok(encryptor.decrypt(input));
+            return DefaultResultBuilder.<String>ok(encryptor.decrypt(encrypted));
         } catch (RuntimeException ex) {
             String arg = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
             return DefaultResultBuilder.<String>fail(CR.get(Code.DECRYPTION_ERROR), arg);
