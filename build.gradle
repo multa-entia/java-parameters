@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    //< restore
+//    id 'maven-publish'
+}
+
+group = 'ru.multa.entia'
+version = '0.1'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+ext {
+    set('lombokVersion', '1.18.22')
+    set('assertJVersion', '3.21.0')
+    set('junitVersion', '5.10.0')
+    set('mockitoVersion', '4.0.0')
+    set('jasyptVersion', '1.9.3')
+
+    set('javaFakersVersion', '0.2')
+    set('javaResultsVersion', '0.7.1')
+}
+
+dependencies {
+    // impl-section
+    implementation "org.jasypt:jasypt:$jasyptVersion"
+    implementation "org.projectlombok:lombok:$lombokVersion"
+    implementation "org.assertj:assertj-core:$assertJVersion"
+
+    // test-impl section
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+    testImplementation "org.projectlombok:lombok:$lombokVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+
+    // anno section
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    // test-anno section
+    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    // impl-local section
+    implementation "ru.multa.entia:java-results:$javaResultsVersion"
+
+    // test-local section
+    testImplementation "ru.multa.entia:java-fakers:$javaFakersVersion"
+    testImplementation "ru.multa.entia:java-results:$javaResultsVersion"
+}
+
+//< restore
+//publishing.publications {
+//    mavenJava(MavenPublication) {
+//        from components.java
+//    }
+//}
+
+test {
+    useJUnitPlatform()
+}
