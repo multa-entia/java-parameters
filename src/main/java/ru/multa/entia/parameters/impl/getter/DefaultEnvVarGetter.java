@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+// TODO: remake
 public class DefaultEnvVarGetter implements Getter<String, Result<String>> {
     public enum Code {
         NAME_IS_NULL,
