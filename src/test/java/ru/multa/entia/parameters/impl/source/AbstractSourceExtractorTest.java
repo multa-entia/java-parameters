@@ -22,5 +22,6 @@ class AbstractSourceExtractorTest {
         extractor.set(expected);
 
         assertThat(extractor.raw).isEqualTo(expected);
+        assertThat(extractor.isSet()).isTrue();
     }
 }

@@ -10,19 +10,35 @@ import ru.multa.entia.results.utils.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultSourceExtractorTest {
+class NotNullSourceExtractorTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        DefaultSourceExtractor extractor = new DefaultSourceExtractor();
+        NotNullSourceExtractor extractor = new NotNullSourceExtractor();
 
         Result<Object> result = extractor.get();
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(DefaultSourceExtractor.Code.NOT_SET))
+                        .code(CR.get(NotNullSourceExtractor.Code.NOT_SET))
+                        .back()
+                        .compare()
+        ).isTrue();
+    }
+
+    @Test
+    void shouldCheckGetting_ifNull() {
+        NotNullSourceExtractor extractor = new NotNullSourceExtractor();
+        extractor.set(null);
+
+        Result<Object> result = extractor.get();
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .seedsComparator()
+                        .code(CR.get(NotNullSourceExtractor.Code.IS_NULL))
                         .back()
                         .compare()
         ).isTrue();
@@ -33,10 +49,9 @@ class DefaultSourceExtractorTest {
             "null",
             "str",
             "123"
-    },
-    nullValues = "null")
+    })
     void shouldCheckGetting(Object raw) {
-        DefaultSourceExtractor extractor = new DefaultSourceExtractor();
+        NotNullSourceExtractor extractor = new NotNullSourceExtractor();
         extractor.set(raw);
 
         Result<Object> result = extractor.get();
