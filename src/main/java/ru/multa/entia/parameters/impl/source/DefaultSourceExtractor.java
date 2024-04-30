@@ -1,17 +1,11 @@
 package ru.multa.entia.parameters.impl.source;
 
-import ru.multa.entia.parameters.api.source.SourceExtractor;
 import ru.multa.entia.results.api.result.Result;
+import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
-public class DefaultSourceExtractor /*implements SourceExtractor<Object>*/ {
-
-//    @Override
-//    public void set(Object object) {
-//
-//    }
-//
-//    @Override
-//    public Result<Object> get() {
-//        return null;
-//    }
+public class DefaultSourceExtractor extends AbstractSourceExtractor<Object> {
+    @Override
+    public Result<Object> get() {
+        return DefaultResultBuilder.<Object>ok(raw);
+    }
 }
