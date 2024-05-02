@@ -10,19 +10,19 @@ import ru.multa.entia.results.utils.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class NotNullSourceExtractorTest {
+class DefaultNotNullSourceExtractorTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        NotNullSourceExtractor extractor = new NotNullSourceExtractor();
+        DefaultNotNullSourceExtractor extractor = new DefaultNotNullSourceExtractor();
 
         Result<Object> result = extractor.get();
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(NotNullSourceExtractor.Code.NOT_SET))
+                        .code(CR.get(DefaultNotNullSourceExtractor.Code.NOT_SET))
                         .back()
                         .compare()
         ).isTrue();
@@ -30,7 +30,7 @@ class NotNullSourceExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNull() {
-        NotNullSourceExtractor extractor = new NotNullSourceExtractor();
+        DefaultNotNullSourceExtractor extractor = new DefaultNotNullSourceExtractor();
         extractor.set(null);
 
         Result<Object> result = extractor.get();
@@ -38,7 +38,7 @@ class NotNullSourceExtractorTest {
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(NotNullSourceExtractor.Code.IS_NULL))
+                        .code(CR.get(DefaultNotNullSourceExtractor.Code.IS_NULL))
                         .back()
                         .compare()
         ).isTrue();
@@ -51,7 +51,7 @@ class NotNullSourceExtractorTest {
             "123"
     })
     void shouldCheckGetting(Object raw) {
-        NotNullSourceExtractor extractor = new NotNullSourceExtractor();
+        DefaultNotNullSourceExtractor extractor = new DefaultNotNullSourceExtractor();
         extractor.set(raw);
 
         Result<Object> result = extractor.get();

@@ -10,19 +10,19 @@ import ru.multa.entia.results.utils.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class StringSourceExtractorTest {
+class DefaultStringSourceExtractorTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        StringSourceExtractor extractor = new StringSourceExtractor();
+        DefaultStringSourceExtractor extractor = new DefaultStringSourceExtractor();
 
         Result<String> result = extractor.get();
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(StringSourceExtractor.Code.NOT_SET))
+                        .code(CR.get(DefaultStringSourceExtractor.Code.NOT_SET))
                         .back()
                         .compare()
         ).isTrue();
@@ -30,7 +30,7 @@ class StringSourceExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNull() {
-        StringSourceExtractor extractor = new StringSourceExtractor();
+        DefaultStringSourceExtractor extractor = new DefaultStringSourceExtractor();
         extractor.set(null);
 
         Result<String> result = extractor.get();
@@ -38,7 +38,7 @@ class StringSourceExtractorTest {
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(StringSourceExtractor.Code.IS_NULL))
+                        .code(CR.get(DefaultStringSourceExtractor.Code.IS_NULL))
                         .back()
                         .compare()
         ).isTrue();
@@ -46,7 +46,7 @@ class StringSourceExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNotString() {
-        StringSourceExtractor extractor = new StringSourceExtractor();
+        DefaultStringSourceExtractor extractor = new DefaultStringSourceExtractor();
         extractor.set(123);
 
         Result<String> result = extractor.get();
@@ -54,7 +54,7 @@ class StringSourceExtractorTest {
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(StringSourceExtractor.Code.IS_NOT_STRING))
+                        .code(CR.get(DefaultStringSourceExtractor.Code.IS_NOT_STRING))
                         .back()
                         .compare()
         ).isTrue();
@@ -66,7 +66,7 @@ class StringSourceExtractorTest {
             "line"
     })
     void shouldCheckGetting(Object raw) {
-        StringSourceExtractor extractor = new StringSourceExtractor();
+        DefaultStringSourceExtractor extractor = new DefaultStringSourceExtractor();
         extractor.set(raw);
 
         Result<String> result = extractor.get();

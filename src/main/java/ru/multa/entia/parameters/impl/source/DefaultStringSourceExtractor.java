@@ -5,7 +5,7 @@ import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
-public class StringSourceExtractor extends AbstractSourceExtractor<String> {
+public class DefaultStringSourceExtractor extends AbstractSourceExtractor<String> {
     public enum Code {
         NOT_SET,
         IS_NULL,
@@ -14,9 +14,9 @@ public class StringSourceExtractor extends AbstractSourceExtractor<String> {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.NOT_SET, "parameters:source-extractor.string:not-set");
-        CR.update(Code.IS_NULL, "parameters:source-extractor.string:is-null");
-        CR.update(Code.IS_NOT_STRING, "parameters:source-extractor.string:is-not-string");
+        CR.update(Code.NOT_SET, "parameters:source-extractor.string.default:not-set");
+        CR.update(Code.IS_NULL, "parameters:source-extractor.string.default:is-null");
+        CR.update(Code.IS_NOT_STRING, "parameters:source-extractor.string.default:is-not-string");
     }
 
     @Override

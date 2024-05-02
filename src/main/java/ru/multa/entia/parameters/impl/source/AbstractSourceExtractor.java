@@ -4,7 +4,6 @@ import lombok.Getter;
 import ru.multa.entia.parameters.api.source.SourceExtractor;
 
 // TODO: !!!
-// StringExtractor
 // IntExtractor
 // FloatExtractor
 public abstract class AbstractSourceExtractor<T> implements SourceExtractor<T> {
