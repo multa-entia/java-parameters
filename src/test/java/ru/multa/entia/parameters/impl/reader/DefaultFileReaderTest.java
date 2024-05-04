@@ -22,7 +22,7 @@ class DefaultFileReaderTest {
     @Test
     void shouldCheckCreationByPath() {
         Path expectedPath = Path.of(EXIST_PATH_NAME);
-        DefaultFileReader reader = new DefaultFileReader(expectedPath);
+        DefaultLiveFileReader reader = new DefaultLiveFileReader(expectedPath);
 
         Field field = reader.getClass().getDeclaredField("path");
         field.setAccessible(true);
@@ -34,7 +34,7 @@ class DefaultFileReaderTest {
     @SneakyThrows
     @Test
     void shouldCheckCreationByString() {
-        DefaultFileReader reader = new DefaultFileReader(EXIST_PATH_NAME);
+        DefaultLiveFileReader reader = new DefaultLiveFileReader(EXIST_PATH_NAME);
 
         Field field = reader.getClass().getDeclaredField("path");
         field.setAccessible(true);
@@ -45,13 +45,13 @@ class DefaultFileReaderTest {
 
     @Test
     void shouldCheckReading_ifFail() {
-        Result<String> result = new DefaultFileReader(calculatePath(NON_EXIST_PATH_NAME)).read();
+        Result<String> result = new DefaultLiveFileReader(calculatePath(NON_EXIST_PATH_NAME)).read();
 
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(DefaultFileReader.Code.CANNOT_READ))
+                        .code(CR.get(DefaultLiveFileReader.Code.CANNOT_READ))
                         .back()
                         .compare()
         ).isTrue();
@@ -63,7 +63,7 @@ class DefaultFileReaderTest {
         Path path = Path.of(calculatePath(EXIST_PATH_NAME));
         String expectedContent = Files.readString(path);
 
-        Result<String> result = new DefaultFileReader(path).read();
+        Result<String> result = new DefaultLiveFileReader(path).read();
 
         assertThat(
                 Results.comparator(result)

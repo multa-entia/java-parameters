@@ -27,6 +27,7 @@ dependencies {
     implementation "org.jasypt:jasypt:$jasyptVersion"
     implementation "org.projectlombok:lombok:$lombokVersion"
     implementation "org.assertj:assertj-core:$assertJVersion"
+    implementation "org.yaml:snakeyaml:1.29"
 
     // test-impl section
     testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"

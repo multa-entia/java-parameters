@@ -10,7 +10,7 @@ import ru.multa.entia.results.utils.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultSourceExtractorTest {
+class DefaultLiveYamlSourceExtractorTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
