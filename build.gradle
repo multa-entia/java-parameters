@@ -17,9 +17,10 @@ ext {
     set('junitVersion', '5.10.0')
     set('mockitoVersion', '4.0.0')
     set('jasyptVersion', '1.9.3')
+    set('snakeyamlVersion', '1.29')
 
     set('javaFakersVersion', '0.2')
-    set('javaResultsVersion', '0.7.1')
+    set('javaResultsVersion', '0.8')
 }
 
 dependencies {
@@ -27,7 +28,7 @@ dependencies {
     implementation "org.jasypt:jasypt:$jasyptVersion"
     implementation "org.projectlombok:lombok:$lombokVersion"
     implementation "org.assertj:assertj-core:$assertJVersion"
-    implementation "org.yaml:snakeyaml:1.29"
+    implementation "org.yaml:snakeyaml:$snakeyamlVersion"
 
     // test-impl section
     testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"

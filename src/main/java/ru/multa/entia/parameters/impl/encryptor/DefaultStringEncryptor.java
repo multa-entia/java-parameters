@@ -45,31 +45,4 @@ public class DefaultStringEncryptor implements Encryptor<String, Result<String>>
             return DefaultResultBuilder.<String>fail(CR.get(Code.ENCRYPTION_ERROR), arg);
         }
     }
-
-    // TODO: del
-//
-//
-//
-//    public static Result<DefaultStringDecryptor> create(final String password) {
-//        return DefaultResultBuilder.<DefaultStringDecryptor>computeFromCodes(
-//                () -> {return new DefaultStringDecryptor(password);},
-//                () -> {return password == null ? CR.get(Code.PASSWORD_IS_NULL) : null;},
-//                () -> {return password.isEmpty() ? CR.get(Code.PASSWORD_IS_EMPTY) : null;}
-//        );
-//    }
-//
-//    private DefaultStringDecryptor(final String password) {
-//        this.encryptor.setPassword(password);
-//    }
-//
-//    @Override
-//    public Result<String> decrypt(final String encrypted) {
-//        try {
-//            return DefaultResultBuilder.<String>ok(encryptor.decrypt(encrypted));
-//        } catch (RuntimeException ex) {
-//            String arg = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
-//            return DefaultResultBuilder.<String>fail(CR.get(Code.DECRYPTION_ERROR), arg);
-//        }
-//    }
-
 }

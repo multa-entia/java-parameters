@@ -40,7 +40,11 @@ public class DefaultYamlCheckingDecoratorReader implements Reader {
 
         Result<String> innerReaderResult = reader.read();
         if (!innerReaderResult.ok()) {
-            return DefaultResultBuilder.<String>fail(innerReaderResult.seed());
+            return new DefaultResultBuilder<String>()
+                    .success(false)
+                    .seed(innerReaderResult.seed())
+                    .causes(innerReaderResult)
+                    .build();
         }
 
         // TODO: !!!
@@ -68,8 +72,12 @@ public class DefaultYamlCheckingDecoratorReader implements Reader {
 
         @Override
         public Result<String> apply(final String line) {
-            // TODO: impl
-            return null;
+            String filterLine = line.replaceAll("\".+\"", "");
+            int colonQuantity = filterLine.length() - filterLine.replaceAll(":", "").length();
+
+            return colonQuantity > 1
+                    ? DefaultResultBuilder.<String>fail(CR.get(Code.MORE_ONE_COLON))
+                    : DefaultResultBuilder.<String>ok(line);
         }
     }
 
