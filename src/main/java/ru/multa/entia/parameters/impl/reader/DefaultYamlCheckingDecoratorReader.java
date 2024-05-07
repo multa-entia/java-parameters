@@ -93,8 +93,14 @@ public class DefaultYamlCheckingDecoratorReader implements Reader {
 
         @Override
         public Result<String> apply(final String line) {
-            // TODO: impl
-            return null;
+            String[] split = line.split(":");
+            if (split.length == 2) {
+                String part = split[1].trim();
+                if (part.length() > 1 && part.charAt(0) == '[' && part.charAt(part.length() - 1) != ']') {
+                    return DefaultResultBuilder.<String>fail(CR.get(Code.NOT_CLOSED_SQUARE_BRACE));
+                }
+            }
+            return DefaultResultBuilder.<String>ok(line);
         }
     }
 }

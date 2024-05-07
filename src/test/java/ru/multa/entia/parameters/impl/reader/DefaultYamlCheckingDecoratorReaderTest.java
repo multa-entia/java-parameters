@@ -61,6 +61,52 @@ class DefaultYamlCheckingDecoratorReaderTest {
         ).isTrue();
     }
 
+    @ParameterizedTest
+    @CsvSource(value = {
+            "listValue: [1, 2, 3",
+            "listValue:[1, 2, ]3"
+    },
+    delimiterString = ";")
+    void shouldCheckNotClosedSquareBraces_ifFail(String line) {
+        DefaultYamlCheckingDecoratorReader.NotClosedSquareBraceChecker checker
+                = new DefaultYamlCheckingDecoratorReader.NotClosedSquareBraceChecker();
+        Result<String> result = checker.apply(line);
+
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator()
+                        .code(CR.get(DefaultYamlCheckingDecoratorReader.NotClosedSquareBraceChecker.Code.NOT_CLOSED_SQUARE_BRACE))
+                        .back()
+                        .compare()
+        ).isTrue();
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = {
+            "intValue: 123",
+            "strValue: 1[23]",
+            "strValue: 123]",
+            "listValue: [1, 2, 3]",
+    },
+    delimiterString = ";")
+    void shouldCheckNotClosedSquareBraces_ifSuccess(String line) {
+        DefaultYamlCheckingDecoratorReader.NotClosedSquareBraceChecker checker
+                = new DefaultYamlCheckingDecoratorReader.NotClosedSquareBraceChecker();
+        Result<String> result = checker.apply(line);
+
+        assertThat(
+                Results.comparator(result)
+                        .isSuccess()
+                        .value(line)
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
+    }
+
     @Test
     void shouldCheckReading_ifInnerReaderNotSet() {
         DefaultYamlCheckingDecoratorReader reader = new DefaultYamlCheckingDecoratorReader(null, false);
