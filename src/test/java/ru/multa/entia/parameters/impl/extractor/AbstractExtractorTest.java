@@ -1,4 +1,4 @@
-package ru.multa.entia.parameters.impl.source;
+package ru.multa.entia.parameters.impl.extractor;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -7,13 +7,13 @@ import ru.multa.entia.results.api.result.Result;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class AbstractSourceExtractorTest {
+class AbstractExtractorTest {
 
     @SneakyThrows
     @Test
     void shouldCheckSetting() {
         String expected = Faker.str_().random();
-        AbstractSourceExtractor<Object> extractor = new AbstractSourceExtractor<>() {
+        AbstractExtractor<Object> extractor = new AbstractExtractor<>() {
             @Override
             public Result<Object> get() {
                 return null;

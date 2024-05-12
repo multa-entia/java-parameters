@@ -1,11 +1,11 @@
-package ru.multa.entia.parameters.impl.source;
+package ru.multa.entia.parameters.impl.extractor;
 
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
-public class DefaultIntegerSourceExtractor extends AbstractSourceExtractor<Integer> {
+public class DefaultIntegerExtractor extends AbstractExtractor<Integer> {
     public enum Code {
         NOT_SET,
         IS_NULL,

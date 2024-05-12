@@ -1,4 +1,4 @@
-package ru.multa.entia.parameters.impl.source;
+package ru.multa.entia.parameters.impl.extractor;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,19 +10,20 @@ import ru.multa.entia.results.utils.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultIntegerSourceExtractorTest {
+class DefaultFloatExtractorTest {
+
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        DefaultIntegerSourceExtractor extractor = new DefaultIntegerSourceExtractor();
+        DefaultFloatExtractor extractor = new DefaultFloatExtractor();
 
-        Result<Integer> result = extractor.get();
+        Result<Float> result = extractor.get();
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(DefaultIntegerSourceExtractor.Code.NOT_SET))
+                        .code(CR.get(DefaultFloatExtractor.Code.NOT_SET))
                         .back()
                         .compare()
         ).isTrue();
@@ -30,15 +31,15 @@ class DefaultIntegerSourceExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNull() {
-        DefaultIntegerSourceExtractor extractor = new DefaultIntegerSourceExtractor();
+        DefaultFloatExtractor extractor = new DefaultFloatExtractor();
         extractor.set(null);
 
-        Result<Integer> result = extractor.get();
+        Result<Float> result = extractor.get();
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(DefaultIntegerSourceExtractor.Code.IS_NULL))
+                        .code(CR.get(DefaultFloatExtractor.Code.IS_NULL))
                         .back()
                         .compare()
         ).isTrue();
@@ -47,20 +48,20 @@ class DefaultIntegerSourceExtractorTest {
     @ParameterizedTest
     @CsvSource(value = {
             "str",
-            "12.4",
+            "12.4.3",
             "0xff",
             "0b10101"
     })
     void shouldCheckGetting_ifNotInteger(Object raw) {
-        DefaultIntegerSourceExtractor extractor = new DefaultIntegerSourceExtractor();
+        DefaultFloatExtractor extractor = new DefaultFloatExtractor();
         extractor.set(raw);
 
-        Result<Integer> result = extractor.get();
+        Result<Float> result = extractor.get();
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(DefaultIntegerSourceExtractor.Code.IS_NOT_INTEGER))
+                        .code(CR.get(DefaultFloatExtractor.Code.IS_NOT_FLOAT))
                         .back()
                         .compare()
         ).isTrue();
@@ -68,17 +69,17 @@ class DefaultIntegerSourceExtractorTest {
 
     @ParameterizedTest
     @CsvSource(value = {
-            "-100,-100",
-            "-1,-1",
-            "0,0",
-            "1,1",
-            "42,42"
+            "-100.1,-100.1",
+            "-1.2,-1.2",
+            "0.0,0.0",
+            "1.3,1.3",
+            "42.42,42.42"
     })
-    void shouldCheckGetting(Object raw, int expected) {
-        DefaultIntegerSourceExtractor extractor = new DefaultIntegerSourceExtractor();
+    void shouldCheckGetting(Object raw, float expected) {
+        DefaultFloatExtractor extractor = new DefaultFloatExtractor();
         extractor.set(raw);
 
-        Result<Integer> result = extractor.get();
+        Result<Float> result = extractor.get();
         assertThat(
                 Results.comparator(result)
                         .isSuccess()

@@ -1,9 +1,9 @@
-package ru.multa.entia.parameters.impl.source;
+package ru.multa.entia.parameters.impl.extractor;
 
 import lombok.Getter;
-import ru.multa.entia.parameters.api.source.SourceExtractor;
+import ru.multa.entia.parameters.api.extractor.Extractor;
 
-public abstract class AbstractSourceExtractor<T> implements SourceExtractor<T> {
+public abstract class AbstractExtractor<T> implements Extractor<T> {
     protected Object raw;
     @Getter
     protected boolean set;

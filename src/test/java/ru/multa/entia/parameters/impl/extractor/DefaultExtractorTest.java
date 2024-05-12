@@ -1,4 +1,4 @@
-package ru.multa.entia.parameters.impl.source;
+package ru.multa.entia.parameters.impl.extractor;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,19 +10,19 @@ import ru.multa.entia.results.utils.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultLiveYamlSourceExtractorTest {
+class DefaultExtractorTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        DefaultSourceExtractor extractor = new DefaultSourceExtractor();
+        DefaultExtractor extractor = new DefaultExtractor();
 
         Result<Object> result = extractor.get();
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(DefaultSourceExtractor.Code.NOT_SET))
+                        .code(CR.get(DefaultExtractor.Code.NOT_SET))
                         .back()
                         .compare()
         ).isTrue();
@@ -36,7 +36,7 @@ class DefaultLiveYamlSourceExtractorTest {
     },
     nullValues = "null")
     void shouldCheckGetting(Object raw) {
-        DefaultSourceExtractor extractor = new DefaultSourceExtractor();
+        DefaultExtractor extractor = new DefaultExtractor();
         extractor.set(raw);
 
         Result<Object> result = extractor.get();
