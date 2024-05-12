@@ -10,6 +10,27 @@ import static org.junit.jupiter.api.Assertions.*;
 class DefaultLiveYamlSourceTest {
 
     @Test
+    void shouldCheckGetting_ifReaderNull() {
+        
+    }
+
+    @Test
+    void shouldCheckGetting_ifReaderReturnFail() {
+        
+    }
+
+    @Test
+    void shouldCheckGetting_ifSyntaxError() {
+        
+    }
+
+    @Test
+    void shouldCheckGetting() {
+
+    }
+
+    // TODO: del
+    @Test
     void test() {
 
         String source =

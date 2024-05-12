@@ -11,7 +11,7 @@ public class DefaultLiveYamlSource implements Source {
     private final Reader reader;
 
     @Override
-    public Result<Object> get(SourceExtractor<?> extractor) {
+    public Result<Object> get(final SourceExtractor<?> extractor) {
         // TODO: impl
         return null;
     }
