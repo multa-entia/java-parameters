@@ -20,7 +20,7 @@ ext {
     set('snakeyamlVersion', '1.29')
 
     set('javaFakersVersion', '0.2')
-    set('javaResultsVersion', '0.8')
+    set('javaResultsVersion', '0.8.1')
 }
 
 dependencies {
