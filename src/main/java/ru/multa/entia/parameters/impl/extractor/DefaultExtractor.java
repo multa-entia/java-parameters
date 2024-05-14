@@ -15,6 +15,10 @@ public class DefaultExtractor extends AbstractExtractor<Object> {
         CR.update(Code.NOT_SET, "parameters:source-extractor.default:not-set");
     }
 
+    public DefaultExtractor(final String property) {
+        super(property);
+    }
+
     @Override
     public Result<Object> get() {
         return isSet() ? DefaultResultBuilder.<Object>ok(raw) : DefaultResultBuilder.<Object>fail(CR.get(Code.NOT_SET));

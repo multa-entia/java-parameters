@@ -19,6 +19,10 @@ public class DefaultFloatExtractor extends AbstractExtractor<Float> {
         CR.update(Code.IS_NOT_FLOAT, "parameters:source-extractor.float.default:is-not-float");
     }
 
+    public DefaultFloatExtractor(final String property) {
+        super(property);
+    }
+
     @Override
     public Result<Float> get() {
         if (!isSet()) {

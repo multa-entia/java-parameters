@@ -19,6 +19,10 @@ public class DefaultIntegerExtractor extends AbstractExtractor<Integer> {
         CR.update(Code.IS_NOT_INTEGER, "parameters:source-extractor.integer.default:is-not-integer");
     }
 
+    public DefaultIntegerExtractor(final String property) {
+        super(property);
+    }
+
     @Override
     public Result<Integer> get() {
         if (!isSet()) {

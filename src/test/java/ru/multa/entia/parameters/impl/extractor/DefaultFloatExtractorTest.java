@@ -16,7 +16,7 @@ class DefaultFloatExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        DefaultFloatExtractor extractor = new DefaultFloatExtractor();
+        DefaultFloatExtractor extractor = new DefaultFloatExtractor("");
 
         Result<Float> result = extractor.get();
         assertThat(
@@ -31,7 +31,7 @@ class DefaultFloatExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNull() {
-        DefaultFloatExtractor extractor = new DefaultFloatExtractor();
+        DefaultFloatExtractor extractor = new DefaultFloatExtractor("");
         extractor.set(null);
 
         Result<Float> result = extractor.get();
@@ -53,7 +53,7 @@ class DefaultFloatExtractorTest {
             "0b10101"
     })
     void shouldCheckGetting_ifNotInteger(Object raw) {
-        DefaultFloatExtractor extractor = new DefaultFloatExtractor();
+        DefaultFloatExtractor extractor = new DefaultFloatExtractor("");
         extractor.set(raw);
 
         Result<Float> result = extractor.get();
@@ -76,7 +76,7 @@ class DefaultFloatExtractorTest {
             "42.42,42.42"
     })
     void shouldCheckGetting(Object raw, float expected) {
-        DefaultFloatExtractor extractor = new DefaultFloatExtractor();
+        DefaultFloatExtractor extractor = new DefaultFloatExtractor("");
         extractor.set(raw);
 
         Result<Float> result = extractor.get();

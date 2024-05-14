@@ -7,6 +7,12 @@ public abstract class AbstractExtractor<T> implements Extractor<T> {
     protected Object raw;
     @Getter
     protected boolean set;
+    @Getter
+    protected String property;
+
+    public AbstractExtractor(final String property) {
+        this.property = property;
+    }
 
     @Override
     public void set(final Object object) {

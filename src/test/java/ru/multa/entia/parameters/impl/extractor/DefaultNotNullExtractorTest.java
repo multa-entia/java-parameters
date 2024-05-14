@@ -15,7 +15,7 @@ class DefaultNotNullExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        DefaultNotNullExtractor extractor = new DefaultNotNullExtractor();
+        DefaultNotNullExtractor extractor = new DefaultNotNullExtractor("");
 
         Result<Object> result = extractor.get();
         assertThat(
@@ -30,7 +30,7 @@ class DefaultNotNullExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNull() {
-        DefaultNotNullExtractor extractor = new DefaultNotNullExtractor();
+        DefaultNotNullExtractor extractor = new DefaultNotNullExtractor("");
         extractor.set(null);
 
         Result<Object> result = extractor.get();
@@ -51,7 +51,7 @@ class DefaultNotNullExtractorTest {
             "123"
     })
     void shouldCheckGetting(Object raw) {
-        DefaultNotNullExtractor extractor = new DefaultNotNullExtractor();
+        DefaultNotNullExtractor extractor = new DefaultNotNullExtractor("");
         extractor.set(raw);
 
         Result<Object> result = extractor.get();

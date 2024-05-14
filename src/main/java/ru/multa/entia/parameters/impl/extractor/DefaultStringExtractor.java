@@ -19,6 +19,10 @@ public class DefaultStringExtractor extends AbstractExtractor<String> {
         CR.update(Code.IS_NOT_STRING, "parameters:source-extractor.string.default:is-not-string");
     }
 
+    public DefaultStringExtractor(final String property) {
+        super(property);
+    }
+
     @Override
     public Result<String> get() {
         return DefaultResultBuilder.<String>computeFromCodes(

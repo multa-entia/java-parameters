@@ -1,8 +1,10 @@
 package ru.multa.entia.parameters.impl.source;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.yaml.snakeyaml.Yaml;
 import ru.multa.entia.fakers.impl.Faker;
 import ru.multa.entia.parameters.api.extractor.Extractor;
 import ru.multa.entia.parameters.api.reader.Reader;
@@ -12,6 +14,7 @@ import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 import ru.multa.entia.results.utils.Results;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -21,9 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DefaultYamlSourceTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
-    private interface TestExtractor extends Extractor<String> {}
+    private interface MockTestExtractor extends Extractor<String> {}
     private static final Supplier<Extractor<String>> EXTRACTOR_SUPPLIER = () -> {
-        return Mockito.mock(TestExtractor.class);
+        return Mockito.mock(MockTestExtractor.class);
     };
 
     @Test
@@ -98,32 +101,28 @@ intValue: 123floatValue: 123.45
 
     @Test
     void shouldCheckGetting() {
-
-    }
-
-    @Test
-    void shouldCheckGetting_secondTime() {
+        String nonExistKey = "nonExist";
         String intKey = "int_value";
-        String floatKey = "float_value";
+        String doubleKey = "float_value";
         String booleanKey = "boolean_key";
         String listKey = "list_value";
         Integer intValue = Faker.int_().random();
-        float floatValue = ((float) Faker.int_().between(0, 1000)) / 100.0f;
+        double doubleValue = ((double) Faker.int_().between(0, 1000)) / 100.0;
         boolean booleanValue = Faker.int_().random(0, 1000) % 2 == 0;
-        String item0 = Faker.str_().random();
-        String item1 = Faker.str_().random();
-        String item2 = Faker.str_().random();
+        String item0 = "_" + Faker.int_().random();
+        String item1 = "_" + Faker.int_().random();
+        String item2 = "_" + Faker.int_().random();
         String template =
-"""
-%s: %s
-%s: %s
-%s: %s
-%s: [%s, %s, %s]
-""";
+                """
+                %s: %s
+                %s: %s
+                %s: %s
+                %s: [%s, %s, %s]
+                """;
         String raw = String.format(
                 template,
                 intKey, intValue,
-                floatKey, floatValue,
+                doubleKey, doubleValue,
                 booleanKey, booleanValue,
                 listKey, item0, item1, item2);
 
@@ -137,78 +136,119 @@ intValue: 123floatValue: 123.45
 
         DefaultYamlSource source = new DefaultYamlSource(readerSupplier.get());
 
-        Extractor<String> testExtractor = new Extractor<>() {
-            private Object object;
+        TestExtractor nonExistExtractor = new TestExtractor(nonExistKey);
+        TestExtractor intKeyExtractor = new TestExtractor(intKey);
+        TestExtractor doubleKeyExtractor = new TestExtractor(doubleKey);
+        TestExtractor booleanKeyExtractor = new TestExtractor(booleanKey);
+        TestExtractor listKeyExtractor = new TestExtractor(listKey);
 
-            @Override
-            public void set(Object object) {
-                this.object = object;
-            }
+        Result<Object> nonExistResult = source.get(nonExistExtractor);
+        Result<Object> intKeyResult = source.get(intKeyExtractor);
+        Result<Object> doubleKeyResult = source.get(doubleKeyExtractor);
+        Result<Object> booleanKeyResult = source.get(booleanKeyExtractor);
+        Result<Object> listKeyResult = source.get(listKeyExtractor);
 
-            @Override
-            public Result<String> get() {
-                return DefaultResultBuilder.<String>ok(String.valueOf(object));
-            }
-        };
+        assertThat(Results.comparator(intKeyResult).isSuccess().seedsComparator().isNull().back().compare()).isTrue();
+        assertThat(Results.comparator(doubleKeyResult).isSuccess().seedsComparator().isNull().back().compare()).isTrue();
+        assertThat(Results.comparator(booleanKeyResult).isSuccess().seedsComparator().isNull().back().compare()).isTrue();
+        assertThat(Results.comparator(listKeyResult).isSuccess().seedsComparator().isNull().back().compare()).isTrue();
 
-        source.get(testExtractor);
-        System.out.println(testExtractor);
-        // TODO: !!!
-//
-//        assertThat(
-//                Results.comparator(result)
-//                        .isSuccess()
-//                        .seedsComparator()
-//                        .isNull()
-//                        .back()
-//                        .compare()
-//        ).isTrue();
+        assertThat(
+                Results.comparator(nonExistResult)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator()
+                        .code(CR.get(DefaultYamlSource.Code.PROPERTY_NOT_EXIST))
+                        .back()
+                        .compare()
+        ).isTrue();
+        assertThat(
+                Results.comparator(intKeyExtractor.get())
+                        .isSuccess()
+                        .value(intValue)
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
+        assertThat(
+                Results.comparator(doubleKeyExtractor.get())
+                        .isSuccess()
+                        .value(doubleValue)
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
+        assertThat(
+                Results.comparator(booleanKeyExtractor.get())
+                        .isSuccess()
+                        .value(booleanValue)
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
+        assertThat(
+                Results.comparator(listKeyExtractor.get())
+                        .isSuccess().
+                        value(List.of(item0, item1, item2))
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
     }
 
-    // TODO: del
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
     @Test
-    void test() {
+    void shouldCheckGetting_secondTime() {
+        String intKey = "int_value";
+        Integer intValue = Faker.int_().random();
+        String template =
+                """
+                %s: %s
+                """;
+        String raw = String.format(
+                template,
+                intKey, intValue);
 
-        String source =
-"""
-int_value: 123
-float_value: 123.56
-boolean_value: true
-list_value_0: [val0, val1, val2]
-list_value_1:
-  - val3
-  - val4
-  - val5
-str_value_0: hello
-str_value_1: "world"
-str_value_2: |
-   Hello
-   world
-   !!!
-object_values_0:
-  dan:
-    name: Dan
-    age: 21
-  dora:
-    name: Dora
-    age: 22
-#bad_int: 123float_v: 123.78
-    name: Dora
-    age: 221
-joe:
-  name: J
-  age: 100
-list_value_3: val0, val1, val2
-list_value_11:
-  val3
-  val4
-  val5
-""";
+        Result<String> readerResult = DefaultResultBuilder.<String>ok(raw);
+        Supplier<Reader> readerSupplier = () -> {
+            Reader reader = Mockito.mock(Reader.class);
+            Mockito.when(reader.read()).thenReturn(readerResult);
 
-        Yaml yaml = new Yaml();
-        Map<String, Object> object = yaml.load(source);
-        for (Map.Entry<String, Object> entry : object.entrySet()) {
-            System.out.printf("%s : %s (%s)\n", entry.getKey(), entry.getValue(), entry.getValue().getClass());
+            return reader;
+        };
+
+        DefaultYamlSource source = new DefaultYamlSource(readerSupplier.get());
+        source.get(new TestExtractor(intKey));
+
+        Field field = source.getClass().getDeclaredField("data");
+        field.setAccessible(true);
+
+        Map<String, Object> gottenData = (Map<String, Object>) field.get(source);
+
+        assertThat(gottenData).containsKey(intKey);
+        assertThat(gottenData.get(intKey)).isEqualTo(intValue);
+    }
+
+    @RequiredArgsConstructor
+    private static class TestExtractor implements Extractor<Object> {
+        @Getter
+        private final String property;
+
+        private Object object;
+
+        @Override
+        public void set(Object object) {
+            this.object = object;
+        }
+
+        @Override
+        public Result<Object> get() {
+            return DefaultResultBuilder.<Object>ok(object);
         }
     }
 }

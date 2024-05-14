@@ -13,7 +13,7 @@ class AbstractExtractorTest {
     @Test
     void shouldCheckSetting() {
         String expected = Faker.str_().random();
-        AbstractExtractor<Object> extractor = new AbstractExtractor<>() {
+        AbstractExtractor<Object> extractor = new AbstractExtractor<>("") {
             @Override
             public Result<Object> get() {
                 return null;

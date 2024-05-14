@@ -18,7 +18,8 @@ public class DefaultYamlSource implements Source {
     public enum Code {
         READER_NOT_SET,
         READER_RETURN_FAIL,
-        SYNTAX_ERROR
+        SYNTAX_ERROR,
+        PROPERTY_NOT_EXIST
     }
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
@@ -26,6 +27,7 @@ public class DefaultYamlSource implements Source {
         CR.update(Code.READER_NOT_SET, "parameters:source.yaml.default:reader-not-set");
         CR.update(Code.READER_RETURN_FAIL, "parameters:source.yaml.default:reader-return-fail");
         CR.update(Code.SYNTAX_ERROR, "parameters:source.yaml.default:syntax-error");
+        CR.update(Code.PROPERTY_NOT_EXIST, "parameters:source.yaml.default:property-not-exist");
     }
 
     private final Reader reader;
@@ -52,20 +54,20 @@ public class DefaultYamlSource implements Source {
         }
 
         if (prevContentHash == null || prevContentHash != result.value().hashCode()) {
-            prevContentHash = result.value().hashCode();
             try {
                 data = new Yaml().load(result.value());
+                prevContentHash = result.value().hashCode();
             } catch (YAMLException ex) {
                 return DefaultResultBuilder.<Object>fail(CR.get(Code.SYNTAX_ERROR));
             }
         }
 
-
-//        if (data.containsKey())
-
-
-
-        // TODO: impl
-        return null;
+        if (data.containsKey(extractor.getProperty())) {
+            Object value = data.get(extractor.getProperty());
+            extractor.set(value);
+            return DefaultResultBuilder.<Object>ok(value);
+        } else {
+            return DefaultResultBuilder.<Object>fail(CR.get(Code.PROPERTY_NOT_EXIST));
+        }
     }
 }

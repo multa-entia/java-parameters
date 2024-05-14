@@ -15,7 +15,7 @@ class DefaultExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        DefaultExtractor extractor = new DefaultExtractor();
+        DefaultExtractor extractor = new DefaultExtractor("");
 
         Result<Object> result = extractor.get();
         assertThat(
@@ -36,7 +36,7 @@ class DefaultExtractorTest {
     },
     nullValues = "null")
     void shouldCheckGetting(Object raw) {
-        DefaultExtractor extractor = new DefaultExtractor();
+        DefaultExtractor extractor = new DefaultExtractor("");
         extractor.set(raw);
 
         Result<Object> result = extractor.get();

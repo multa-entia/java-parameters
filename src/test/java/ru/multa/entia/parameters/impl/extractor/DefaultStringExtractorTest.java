@@ -15,7 +15,7 @@ class DefaultStringExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        DefaultStringExtractor extractor = new DefaultStringExtractor();
+        DefaultStringExtractor extractor = new DefaultStringExtractor("");
 
         Result<String> result = extractor.get();
         assertThat(
@@ -30,7 +30,7 @@ class DefaultStringExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNull() {
-        DefaultStringExtractor extractor = new DefaultStringExtractor();
+        DefaultStringExtractor extractor = new DefaultStringExtractor("");
         extractor.set(null);
 
         Result<String> result = extractor.get();
@@ -46,7 +46,7 @@ class DefaultStringExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNotString() {
-        DefaultStringExtractor extractor = new DefaultStringExtractor();
+        DefaultStringExtractor extractor = new DefaultStringExtractor("");
         extractor.set(123);
 
         Result<String> result = extractor.get();
@@ -66,7 +66,7 @@ class DefaultStringExtractorTest {
             "line"
     })
     void shouldCheckGetting(Object raw) {
-        DefaultStringExtractor extractor = new DefaultStringExtractor();
+        DefaultStringExtractor extractor = new DefaultStringExtractor("");
         extractor.set(raw);
 
         Result<String> result = extractor.get();

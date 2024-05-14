@@ -15,7 +15,7 @@ class DefaultIntegerExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNotSet() {
-        DefaultIntegerExtractor extractor = new DefaultIntegerExtractor();
+        DefaultIntegerExtractor extractor = new DefaultIntegerExtractor("");
 
         Result<Integer> result = extractor.get();
         assertThat(
@@ -30,7 +30,7 @@ class DefaultIntegerExtractorTest {
 
     @Test
     void shouldCheckGetting_ifNull() {
-        DefaultIntegerExtractor extractor = new DefaultIntegerExtractor();
+        DefaultIntegerExtractor extractor = new DefaultIntegerExtractor("");
         extractor.set(null);
 
         Result<Integer> result = extractor.get();
@@ -52,7 +52,7 @@ class DefaultIntegerExtractorTest {
             "0b10101"
     })
     void shouldCheckGetting_ifNotInteger(Object raw) {
-        DefaultIntegerExtractor extractor = new DefaultIntegerExtractor();
+        DefaultIntegerExtractor extractor = new DefaultIntegerExtractor("");
         extractor.set(raw);
 
         Result<Integer> result = extractor.get();
@@ -75,7 +75,7 @@ class DefaultIntegerExtractorTest {
             "42,42"
     })
     void shouldCheckGetting(Object raw, int expected) {
-        DefaultIntegerExtractor extractor = new DefaultIntegerExtractor();
+        DefaultIntegerExtractor extractor = new DefaultIntegerExtractor("");
         extractor.set(raw);
 
         Result<Integer> result = extractor.get();

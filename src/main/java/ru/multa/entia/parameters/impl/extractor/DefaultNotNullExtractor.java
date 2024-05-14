@@ -17,6 +17,10 @@ public class DefaultNotNullExtractor extends AbstractExtractor<Object> {
         CR.update(Code.IS_NULL, "parameters:source-extractor.not-null.default:is-null");
     }
 
+    public DefaultNotNullExtractor(final String property) {
+        super(property);
+    }
+
     @Override
     public Result<Object> get() {
         return DefaultResultBuilder.<Object>computeFromCodes(
