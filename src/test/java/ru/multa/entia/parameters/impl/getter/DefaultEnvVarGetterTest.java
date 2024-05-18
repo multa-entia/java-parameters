@@ -10,6 +10,7 @@ import ru.multa.entia.results.utils.Results;
 
 import java.util.function.Function;
 
+// TODO: del
 class DefaultEnvVarGetterTest {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
