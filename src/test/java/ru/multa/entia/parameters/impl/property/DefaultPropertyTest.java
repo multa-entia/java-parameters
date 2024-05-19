@@ -21,7 +21,7 @@ class DefaultPropertyTest {
     }
 
     @Test
-    void shouldCheckGetting_ifNodeSet() {
+    void shouldCheckGetting_ifNotSet() {
         Result<Object> result = new DefaultProperty(Faker.str_().random()).get();
 
         assertThat(

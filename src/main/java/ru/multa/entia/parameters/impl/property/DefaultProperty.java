@@ -16,7 +16,7 @@ public class DefaultProperty implements Property<Object> {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.RAW_NOT_SET, "parameters:property.default:raw-not-isSet");
+        CR.update(Code.RAW_NOT_SET, "parameters:property.default:raw-not-set");
     }
 
     protected AtomicReference<Datum> raw = new AtomicReference<>(new Datum(false, null));
