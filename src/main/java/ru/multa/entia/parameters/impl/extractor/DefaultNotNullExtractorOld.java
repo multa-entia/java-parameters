@@ -13,7 +13,7 @@ public class DefaultNotNullExtractorOld extends AbstractExtractorOld<Object> {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.NOT_SET, "parameters:source-extractor.not-null.default:not-set");
+        CR.update(Code.NOT_SET, "parameters:source-extractor.not-null.default:not-isSet");
         CR.update(Code.IS_NULL, "parameters:source-extractor.not-null.default:is-null");
     }
 

@@ -24,7 +24,7 @@ public class DefaultYamlSourceOld implements SourceOld {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.READER_NOT_SET, "parameters:source.yaml.default:reader-not-set");
+        CR.update(Code.READER_NOT_SET, "parameters:source.yaml.default:reader-not-isSet");
         CR.update(Code.READER_RETURN_FAIL, "parameters:source.yaml.default:reader-return-fail");
         CR.update(Code.SYNTAX_ERROR, "parameters:source.yaml.default:syntax-error");
         CR.update(Code.PROPERTY_NOT_EXIST, "parameters:source.yaml.default:property-not-exist");

@@ -14,7 +14,7 @@ public class DefaultIntegerExtractorOld extends AbstractExtractorOld<Integer> {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.NOT_SET, "parameters:source-extractor.integer.default:not-set");
+        CR.update(Code.NOT_SET, "parameters:source-extractor.integer.default:not-isSet");
         CR.update(Code.IS_NULL, "parameters:source-extractor.integer.default:is-null");
         CR.update(Code.IS_NOT_INTEGER, "parameters:source-extractor.integer.default:is-not-integer");
     }

@@ -14,7 +14,7 @@ public class DefaultFloatExtractorOld extends AbstractExtractorOld<Float> {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.NOT_SET, "parameters:source-extractor.float.default:not-set");
+        CR.update(Code.NOT_SET, "parameters:source-extractor.float.default:not-isSet");
         CR.update(Code.IS_NULL, "parameters:source-extractor.float.default:is-null");
         CR.update(Code.IS_NOT_FLOAT, "parameters:source-extractor.float.default:is-not-float");
     }

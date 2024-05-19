@@ -14,7 +14,7 @@ public class DefaultStringExtractorOld extends AbstractExtractorOld<String> {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.NOT_SET, "parameters:source-extractor.string.default:not-set");
+        CR.update(Code.NOT_SET, "parameters:source-extractor.string.default:not-isSet");
         CR.update(Code.IS_NULL, "parameters:source-extractor.string.default:is-null");
         CR.update(Code.IS_NOT_STRING, "parameters:source-extractor.string.default:is-not-string");
     }

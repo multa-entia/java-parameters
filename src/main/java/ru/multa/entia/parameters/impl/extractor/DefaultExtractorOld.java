@@ -12,7 +12,7 @@ public class DefaultExtractorOld extends AbstractExtractorOld<Object> {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.NOT_SET, "parameters:source-extractor.default:not-set");
+        CR.update(Code.NOT_SET, "parameters:source-extractor.default:not-isSet");
     }
 
     public DefaultExtractorOld(final String property) {
