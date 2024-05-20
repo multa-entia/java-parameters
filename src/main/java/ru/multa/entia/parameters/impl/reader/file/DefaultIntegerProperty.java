@@ -1,11 +1,21 @@
-package ru.multa.entia.parameters.impl.extractor;
+package ru.multa.entia.parameters.impl.reader.file;
+
+import ru.multa.entia.parameters.api.property.Property;
+import ru.multa.entia.results.api.result.Result;
+
+public class DefaultIntegerProperty  {
+
+
+
+    /*
+
+    package ru.multa.entia.parameters.impl.extractor;
 
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
-// TODO: del
 public class DefaultIntegerExtractorOld extends AbstractExtractorOld<Integer> {
     public enum Code {
         NOT_SET,
@@ -38,4 +48,7 @@ public class DefaultIntegerExtractorOld extends AbstractExtractorOld<Integer> {
             return DefaultResultBuilder.<Integer>fail(CR.get(Code.IS_NOT_INTEGER));
         }
     }
+}
+
+     */
 }
