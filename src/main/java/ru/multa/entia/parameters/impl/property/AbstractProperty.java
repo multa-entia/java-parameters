@@ -1,19 +1,16 @@
-package ru.multa.entia.parameters.impl.reader.file;
+package ru.multa.entia.parameters.impl.property;
 
 import lombok.RequiredArgsConstructor;
 import ru.multa.entia.parameters.api.property.Property;
 
 @RequiredArgsConstructor
 public abstract class AbstractProperty<T> implements Property<T> {
-    private final Property<T> innerProperty;
-
-    protected Object raw;
+    protected final Property<Object> innerProperty;
 
     @Override
     public void set(final Object raw) {
-        this.raw = raw;
+        innerProperty.set(raw);
     }
-
 
     @Override
     public String getName() {

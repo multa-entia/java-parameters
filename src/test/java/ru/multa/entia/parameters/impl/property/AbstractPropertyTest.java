@@ -1,14 +1,14 @@
-package ru.multa.entia.parameters.impl.reader.file;
+package ru.multa.entia.parameters.impl.property;
 
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import ru.multa.entia.fakers.impl.Faker;
 import ru.multa.entia.parameters.api.property.Property;
-import ru.multa.entia.parameters.impl.property.DefaultProperty;
 import ru.multa.entia.results.api.result.Result;
 
-import java.lang.reflect.Field;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,22 +35,34 @@ class AbstractPropertyTest {
         assertThat(property.getName()).isEqualTo(expectedName);
     }
 
-    @SneakyThrows
     @Test
     void shouldCheckRawSetting() {
-        String expectedRaw = Faker.str_().random();
-        AbstractProperty<Object> property = new AbstractProperty<>(null) {
+        AtomicReference<String> holder = new AtomicReference<>();
+        Supplier<Property<Object>> propertySupplier = () -> {
+            DefaultProperty property = Mockito.mock(DefaultProperty.class);
+            Mockito
+                    .doAnswer(new Answer<Void>() {
+                        @Override
+                        public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                            holder.set(invocationOnMock.getArgument(0));
+                            return null;
+                        }
+                    })
+                    .when(property)
+                    .set(Mockito.any());
+
+            return property;
+        };
+        AbstractProperty<Object> property = new AbstractProperty<>(propertySupplier.get()) {
             @Override
             public Result<Object> get() {
                 return null;
             }
         };
 
+        String expectedRaw = Faker.str_().random();
         property.set(expectedRaw);
-        Field field = property.getClass().getSuperclass().getDeclaredField("raw");
-        field.setAccessible(true);
-        Object gottenRaw = field.get(property);
 
-        assertThat(gottenRaw).isEqualTo(expectedRaw);
+        assertThat(holder.get()).isEqualTo(expectedRaw);
     }
 }
