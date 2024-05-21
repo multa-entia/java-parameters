@@ -8,7 +8,7 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
 import java.util.Objects;
 
-public class DefaultNotNullProperty implements Property<Object> {
+public class DefaultNotNullPropertyOld implements Property<Object> {
     public enum Code {
         IS_NULL
     }
@@ -20,16 +20,17 @@ public class DefaultNotNullProperty implements Property<Object> {
 
     private final Property<Object> innerProperty;
 
-    public DefaultNotNullProperty(final String name) {
+    public DefaultNotNullPropertyOld(final String name) {
         this(name, null);
     }
 
-    public DefaultNotNullProperty(final String name, final Property<Object> property) {
-        this.innerProperty = Objects.requireNonNullElse(property, new DefaultProperty(name));
+    public DefaultNotNullPropertyOld(final String name, final Property<Object> property) {
+        this.innerProperty = Objects.requireNonNullElse(property, new DefaultPropertyOld(name));
     }
 
     @Override
     public void set(final Object raw) {
+        // TODO: raw is result + check before setting
         this.innerProperty.set(raw);
     }
 

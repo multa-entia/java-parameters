@@ -6,7 +6,7 @@ import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
-public class DefaultIntegerProperty extends AbstractProperty<Integer> {
+public class DefaultIntegerPropertyOld extends AbstractPropertyOld<Integer> {
     public enum Code {
         PARSE_ERROR
     }
@@ -16,7 +16,7 @@ public class DefaultIntegerProperty extends AbstractProperty<Integer> {
         CR.update(Code.PARSE_ERROR, "parameters:int-property.default:parse-error");
     }
 
-    public DefaultIntegerProperty(final Property<Object> innerProperty) {
+    public DefaultIntegerPropertyOld(final Property<Object> innerProperty) {
         super(innerProperty);
     }
 

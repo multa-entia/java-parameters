@@ -9,7 +9,7 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class DefaultProperty implements Property<Object> {
+public class DefaultPropertyOld implements Property<Object> {
     public enum Code {
         RAW_NOT_SET
     }
@@ -23,7 +23,7 @@ public class DefaultProperty implements Property<Object> {
     @Getter
     protected String name;
 
-    public DefaultProperty(final String name) {
+    public DefaultPropertyOld(final String name) {
         this.name = name;
     }
 

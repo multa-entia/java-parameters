@@ -1,68 +1,86 @@
 package ru.multa.entia.parameters.impl.property;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import ru.multa.entia.fakers.impl.Faker;
-import ru.multa.entia.parameters.api.property.Property;
+import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
-
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
+import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
+import ru.multa.entia.results.impl.result.DefaultResultBuilder;
+import ru.multa.entia.results.utils.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AbstractPropertyTest {
+    private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
     void shouldCheckNameGetting() {
         String expectedName = Faker.str_().random();
-        Supplier<Property<Object>> propertySupplier = () -> {
-            DefaultProperty property = Mockito.mock(DefaultProperty.class);
-            Mockito.when(property.getName()).thenReturn(expectedName);
+        String gottenName = new TestDefaultProperty(expectedName).getName();
 
-            return property;
-        };
-
-        AbstractProperty<Object> property = new AbstractProperty<>(propertySupplier.get()) {
-            @Override
-            public Result<Object> get() {
-                return null;
-            }
-        };
-
-        assertThat(property.getName()).isEqualTo(expectedName);
+        assertThat(gottenName).isEqualTo(expectedName);
     }
 
     @Test
-    void shouldCheckRawSetting() {
-        AtomicReference<String> holder = new AtomicReference<>();
-        Supplier<Property<Object>> propertySupplier = () -> {
-            DefaultProperty property = Mockito.mock(DefaultProperty.class);
-            Mockito
-                    .doAnswer(new Answer<Void>() {
-                        @Override
-                        public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                            holder.set(invocationOnMock.getArgument(0));
-                            return null;
-                        }
-                    })
-                    .when(property)
-                    .set(Mockito.any());
+    void shouldCheckGetting_ifNotSet() {
+        Result<Object> result = new TestDefaultProperty(Faker.str_().random()).get();
 
-            return property;
-        };
-        AbstractProperty<Object> property = new AbstractProperty<>(propertySupplier.get()) {
-            @Override
-            public Result<Object> get() {
-                return null;
-            }
-        };
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator()
+                        .code(CR.get(AbstractProperty.Code.IS_NOT_SET))
+                        .back()
+                        .compare()
+        ).isTrue();
+    }
 
-        String expectedRaw = Faker.str_().random();
-        property.set(expectedRaw);
+    @Test
+    void shouldCheckGetting_ifSetNul() {
+        TestDefaultProperty property = new TestDefaultProperty(Faker.str_().random());
+        property.set(null);
 
-        assertThat(holder.get()).isEqualTo(expectedRaw);
+        Result<Object> result = property.get();
+
+        assertThat(
+                Results.comparator(result)
+                        .isSuccess()
+                        .value(null)
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
+    }
+
+    @Test
+    void shouldCheckGetting() {
+        String expected = Faker.str_().random();
+        TestDefaultProperty property = new TestDefaultProperty(Faker.str_().random());
+        property.set(expected);
+
+        Result<Object> result = property.get();
+
+        assertThat(
+                Results.comparator(result)
+                        .isSuccess()
+                        .value(expected)
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
+    }
+
+    private static class TestDefaultProperty extends AbstractProperty<Object> {
+        public TestDefaultProperty(final String name) {
+            super(name);
+        }
+
+        @Override
+        protected Result<Object> checkRaw(final Object raw) {
+            return DefaultResultBuilder.<Object>ok(raw);
+        }
     }
 }
