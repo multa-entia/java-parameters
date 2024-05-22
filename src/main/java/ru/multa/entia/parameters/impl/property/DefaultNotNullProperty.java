@@ -12,7 +12,7 @@ public class DefaultNotNullProperty extends AbstractProperty<Object>{
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(DefaultIntegerProperty.Code.IS_NULL, "parameters:not-null-property.default:is-null");
+        CR.update(Code.IS_NULL, "parameters:not-null-property.default:is-null");
     }
 
     public DefaultNotNullProperty(final String name) {

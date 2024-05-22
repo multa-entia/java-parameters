@@ -12,7 +12,7 @@ public class DefaultStringProperty extends AbstractProperty<String>{
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(DefaultIntegerProperty.Code.IS_NULL, "parameters:str-property.default:is-null");
+        CR.update(Code.IS_NULL, "parameters:str-property.default:is-null");
     }
 
     public DefaultStringProperty(final String name) {
