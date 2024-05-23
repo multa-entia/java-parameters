@@ -15,20 +15,20 @@ import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultStringDecryptorOldTest {
+class DefaultStringDecryptorTest {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
     void shouldCheckCreation_ifPasswordNull() {
-        Result<DefaultStringDecryptorOld> result = DefaultStringDecryptorOld.create(null);
+        Result<DefaultStringDecryptor> result = DefaultStringDecryptor.create(null);
 
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .value(null)
                         .seedsComparator()
-                        .code(CR.get(DefaultStringDecryptorOld.Code.PASSWORD_IS_NULL))
+                        .code(CR.get(DefaultStringDecryptor.Code.PASSWORD_IS_NULL))
                         .argsAreEmpty()
                         .back()
                         .compare()
@@ -37,14 +37,14 @@ class DefaultStringDecryptorOldTest {
 
     @Test
     void shouldCheckCreation_ifPasswordEmpty() {
-        Result<DefaultStringDecryptorOld> result = DefaultStringDecryptorOld.create("");
+        Result<DefaultStringDecryptor> result = DefaultStringDecryptor.create("");
 
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .value(null)
                         .seedsComparator()
-                        .code(CR.get(DefaultStringDecryptorOld.Code.PASSWORD_IS_EMPTY))
+                        .code(CR.get(DefaultStringDecryptor.Code.PASSWORD_IS_EMPTY))
                         .argsAreEmpty()
                         .back()
                         .compare()
@@ -55,7 +55,7 @@ class DefaultStringDecryptorOldTest {
     @Test
     void shouldCheckCreation() {
         String expectedPassword = Faker.str_().random(10, 20);
-        Result<DefaultStringDecryptorOld> result = DefaultStringDecryptorOld.create(expectedPassword);
+        Result<DefaultStringDecryptor> result = DefaultStringDecryptor.create(expectedPassword);
 
         assertThat(
                 Results.comparator(result)
@@ -66,7 +66,7 @@ class DefaultStringDecryptorOldTest {
                         .compare()
         ).isTrue();
 
-        DefaultStringDecryptorOld decryptor = result.value();
+        DefaultStringDecryptor decryptor = result.value();
         Field field = decryptor.getClass().getDeclaredField("encryptor");
         field.setAccessible(true);
 
@@ -86,7 +86,7 @@ class DefaultStringDecryptorOldTest {
     @Test
     void shouldCheckFailDecryption() {
         String password = Faker.str_().random(10, 20);
-        DefaultStringDecryptorOld decryptor = DefaultStringDecryptorOld.create(password).value();
+        DefaultStringDecryptor decryptor = DefaultStringDecryptor.create(password).value();
 
         Result<String> result = decryptor.decrypt("");
 
@@ -95,7 +95,7 @@ class DefaultStringDecryptorOldTest {
                         .isFail()
                         .value(null)
                         .seedsComparator()
-                        .code(CR.get(DefaultStringDecryptorOld.Code.DECRYPTION_ERROR))
+                        .code(CR.get(DefaultStringDecryptor.Code.DECRYPTION_ERROR))
                         .back()
                         .compare()
         ).isTrue();
@@ -110,7 +110,7 @@ class DefaultStringDecryptorOldTest {
         encryptor.setPassword(password);
         String encrypted = encryptor.encrypt(expectedOriginal);
 
-        Result<String> result = DefaultStringDecryptorOld.create(password).value().decrypt(encrypted);
+        Result<String> result = DefaultStringDecryptor.create(password).value().decrypt(encrypted);
 
         assertThat(
                 Results.comparator(result)
