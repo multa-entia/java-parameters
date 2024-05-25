@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultYamlSourceOldTest {
+class DefaultYamlPropertySourceOldTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     private interface MockTestExtractorOld extends ExtractorOld<String> {}
