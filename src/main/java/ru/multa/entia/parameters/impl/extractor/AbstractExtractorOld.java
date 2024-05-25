@@ -3,6 +3,7 @@ package ru.multa.entia.parameters.impl.extractor;
 import lombok.Getter;
 import ru.multa.entia.parameters.api.extractor.ExtractorOld;
 
+// TODO: del
 public abstract class AbstractExtractorOld<T> implements ExtractorOld<T> {
     protected Object raw;
     @Getter

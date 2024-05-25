@@ -5,6 +5,7 @@ import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
+// TODO: del
 public class DefaultFloatExtractorOld extends AbstractExtractorOld<Float> {
     public enum Code {
         NOT_SET,

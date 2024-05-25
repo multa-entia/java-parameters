@@ -10,6 +10,7 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 import java.util.Objects;
 import java.util.function.Function;
 
+// TODO: del
 public class DefaultEnvVarSourceOld implements SourceOld {
     public enum Code {
         PROPERTY_IS_ABSENCE

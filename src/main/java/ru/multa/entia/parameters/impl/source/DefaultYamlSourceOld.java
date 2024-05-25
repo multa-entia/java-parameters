@@ -13,6 +13,7 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
 import java.util.Map;
 
+// TODO: del
 @RequiredArgsConstructor
 public class DefaultYamlSourceOld implements SourceOld {
     public enum Code {

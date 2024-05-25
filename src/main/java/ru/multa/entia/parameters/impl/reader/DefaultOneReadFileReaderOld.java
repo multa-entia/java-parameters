@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+// TODO: del
 public class DefaultOneReadFileReaderOld implements ReaderOld {
     public enum Code {
         CANNOT_READ
