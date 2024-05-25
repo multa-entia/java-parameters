@@ -1,15 +1,13 @@
 package ru.multa.entia.parameters.impl.encryptor;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import ru.multa.entia.parameters.api.encryptor.EncryptorOld;
+import ru.multa.entia.parameters.api.encryptor.Encryptor;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
-import java.nio.file.Files;
-
-public class DefaultStringEncryptorOld implements EncryptorOld<String, Result<String>> {
+public class DefaultStringEncryptor implements Encryptor<String, Result<String>> {
     public enum Code {
         PASSWORD_IS_NULL,
         PASSWORD_IS_EMPTY,
@@ -25,15 +23,15 @@ public class DefaultStringEncryptorOld implements EncryptorOld<String, Result<St
 
     private final StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
 
-    public static Result<DefaultStringEncryptorOld> create(final String password){
-        return DefaultResultBuilder.<DefaultStringEncryptorOld>computeFromCodes(
-                () -> {return new DefaultStringEncryptorOld(password);},
+    public static Result<DefaultStringEncryptor> create(final String password){
+        return DefaultResultBuilder.<DefaultStringEncryptor>computeFromCodes(
+                () -> {return new DefaultStringEncryptor(password);},
                 () -> {return password == null ? CR.get(Code.PASSWORD_IS_NULL) : null;},
                 () -> {return password.isEmpty() ? CR.get(Code.PASSWORD_IS_EMPTY) : null;}
         );
     }
 
-    private DefaultStringEncryptorOld(final String password) {
+    private DefaultStringEncryptor(final String password) {
         this.encryptor.setPassword(password);
     }
 

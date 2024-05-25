@@ -15,20 +15,20 @@ import java.lang.reflect.Field;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultStringEncryptorOldOldTest {
+class DefaultStringEncryptorTest {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
     void shouldCheckCreation_ifPasswordNull() {
-        Result<DefaultStringEncryptorOld> result = DefaultStringEncryptorOld.create(null);
+        Result<DefaultStringEncryptor> result = DefaultStringEncryptor.create(null);
 
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .value(null)
                         .seedsComparator()
-                        .code(CR.get(DefaultStringEncryptorOld.Code.PASSWORD_IS_NULL))
+                        .code(CR.get(DefaultStringEncryptor.Code.PASSWORD_IS_NULL))
                         .argsAreEmpty()
                         .back()
                         .compare()
@@ -37,14 +37,14 @@ class DefaultStringEncryptorOldOldTest {
 
     @Test
     void shouldCheckCreation_ifPasswordEmpty() {
-        Result<DefaultStringEncryptorOld> result = DefaultStringEncryptorOld.create("");
+        Result<DefaultStringEncryptor> result = DefaultStringEncryptor.create("");
 
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .value(null)
                         .seedsComparator()
-                        .code(CR.get(DefaultStringEncryptorOld.Code.PASSWORD_IS_EMPTY))
+                        .code(CR.get(DefaultStringEncryptor.Code.PASSWORD_IS_EMPTY))
                         .argsAreEmpty()
                         .back()
                         .compare()
@@ -55,7 +55,7 @@ class DefaultStringEncryptorOldOldTest {
     @Test
     void shouldCheckCreation() {
         String expectedPassword = Faker.str_().random(10, 20);
-        Result<DefaultStringEncryptorOld> result = DefaultStringEncryptorOld.create(expectedPassword);
+        Result<DefaultStringEncryptor> result = DefaultStringEncryptor.create(expectedPassword);
 
         assertThat(
                 Results.comparator(result)
@@ -66,7 +66,7 @@ class DefaultStringEncryptorOldOldTest {
                         .compare()
         ).isTrue();
 
-        DefaultStringEncryptorOld value = result.value();
+        DefaultStringEncryptor value = result.value();
         Field field = value.getClass().getDeclaredField("encryptor");
         field.setAccessible(true);
 
@@ -88,7 +88,7 @@ class DefaultStringEncryptorOldOldTest {
         String original = Faker.str_().random(30, 50);
         String password = Faker.str_().random(5, 10);
 
-        Result<String> result = DefaultStringEncryptorOld.create(password).value().encrypt(original);
+        Result<String> result = DefaultStringEncryptor.create(password).value().encrypt(original);
 
         assertThat(
                 Results.comparator(result)
