@@ -2,21 +2,9 @@ package ru.multa.entia.parameters.impl.property;
 
 import ru.multa.entia.parameters.api.decryptor.Decryptor;
 import ru.multa.entia.parameters.api.property.Property;
-import ru.multa.entia.parameters.impl.decryptor.DefaultStringDecryptor;
 import ru.multa.entia.results.api.result.Result;
 
-import java.util.Objects;
-
 public class DefaultDecryptStringProperty implements Property<String> {
-//    public enum Code {
-//        IS_NULL
-//    }
-//
-//    private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
-//    static {
-//        CR.update(Code.IS_NULL, "parameters:str-property.default:is-null");
-//    }
-
     private final Property<String> innerProperty;
     private final Decryptor<String, Result<String>> decryptor;
 
@@ -38,8 +26,11 @@ public class DefaultDecryptStringProperty implements Property<String> {
 
     @Override
     public Result<String> get() {
-        // TODO: impl
-        return null;
+        Result<String> innerPropertyResult = innerProperty.get();
+        if (!innerPropertyResult.ok()) {
+            return innerPropertyResult;
+        }
+        return decryptor.decrypt(innerPropertyResult.value());
     }
 
     @Override
