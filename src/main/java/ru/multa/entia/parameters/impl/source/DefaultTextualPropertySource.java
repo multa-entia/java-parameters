@@ -1,5 +1,6 @@
 package ru.multa.entia.parameters.impl.source;
 
+import lombok.EqualsAndHashCode;
 import ru.multa.entia.parameters.api.reader.file.ReadResult;
 import ru.multa.entia.parameters.api.reader.file.Reader;
 import ru.multa.entia.parameters.api.source.PropertySource;
@@ -11,8 +12,9 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
-
+@EqualsAndHashCode
 public class DefaultTextualPropertySource implements PropertySource {
     public enum Code {
         READER_IS_NULL,

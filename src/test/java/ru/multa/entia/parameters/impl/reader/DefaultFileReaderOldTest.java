@@ -49,60 +49,6 @@ class DefaultFileReaderOldTest {
 //        }
 //    }
 
-
-    // TODO: del
-    @Test
-    void test1() throws IOException, InterruptedException {
-//        WatchService watchService = FileSystems.getDefault().newWatchService();
-
-        /*
-
-        Path path = Paths.get("pathToDir");
-
-        WatchKey watchKey = path.register(
-  watchService, StandardWatchEventKinds...);
-
-  WatchKey watchKey = watchService.poll();
-
-  WatchKey watchKey = watchService.poll(long timeout, TimeUnit units);
-
-  WatchKey watchKey = watchService.take();
-
-  watchKey.reset();
-
-        WatchKey key;
-        while ((key = watchService.take()) != null) {
-            for (WatchEvent<?> event : key.pollEvents()) {
-                System.out.println(
-                  "Event kind:" + event.kind()
-                    + ". File affected: " + event.context() + ".");
-            }
-            key.reset();
-        }
-
-         */
-
-        AtomicReference<WatchService> serviceHolder = new AtomicReference<>(FileSystems.getDefault().newWatchService());
-        Path path = Path.of("C:\\Users\\KasymbekovPN\\projects\\multa-entia\\java-parameters\\src\\test\\resources\\ru\\multa\\entia\\parameters\\impl\\reader\\");
-        path.register(serviceHolder.get(), StandardWatchEventKinds.ENTRY_MODIFY);
-
-        Runnable r = () -> {
-            WatchKey key;
-            try {
-                while ((key = serviceHolder.get().take()) != null) {
-                    for (WatchEvent<?> pollEvent : key.pollEvents()) {
-                        System.out.println("EKIND: " + pollEvent.kind() + ". File affected: " + pollEvent.context());
-                    }
-                    key.reset();
-                }
-            } catch (InterruptedException ignored) {}
-        };
-        Thread t = new Thread(r);
-        t.start();
-
-        Thread.sleep(3_000);
-    }
-
     @SneakyThrows
     @Test
     void shouldCheckCreationByPath() {

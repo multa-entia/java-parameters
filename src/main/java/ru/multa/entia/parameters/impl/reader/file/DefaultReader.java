@@ -1,5 +1,6 @@
 package ru.multa.entia.parameters.impl.reader.file;
 
+import lombok.EqualsAndHashCode;
 import ru.multa.entia.parameters.api.reader.file.ReadResult;
 import ru.multa.entia.parameters.api.reader.file.Reader;
 import ru.multa.entia.results.api.repository.CodeRepository;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 
+@EqualsAndHashCode
 public class DefaultReader implements Reader {
     public enum Code {
         CANNOT_READ
