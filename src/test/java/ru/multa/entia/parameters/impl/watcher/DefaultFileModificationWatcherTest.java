@@ -4,7 +4,10 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Mockito;
+import ru.multa.entia.fakers.impl.Faker;
 import ru.multa.entia.parameters.api.watcher.Watcher;
+import ru.multa.entia.parameters.api.watcher.WatcherListener;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -12,12 +15,18 @@ import ru.multa.entia.results.utils.Results;
 
 import java.lang.reflect.Field;
 import java.nio.file.*;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DefaultFileModificationWatcherTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
+
+    private static final Supplier<WatcherListener> WATCHER_LISTENER_SUPPLIER = () -> {
+        return Mockito.mock(WatcherListener.class);
+    };
 
     @ParameterizedTest
     @CsvSource(value = {
@@ -169,6 +178,110 @@ class DefaultFileModificationWatcherTest {
 
         assertThat(gottenExecuted.get()).isFalse();
         assertThat(gottenService).isNull();
+    }
+
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    @Test
+    void shouldCheckListenerAddition() {
+        int quantity = Faker.int_().between(10, 20);
+        Path path = getPathToTestFile();
+        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+
+        for (int i = 0; i < quantity; i++) {
+            Result<Object> result = watcher.addListener(WATCHER_LISTENER_SUPPLIER.get());
+
+            assertThat(
+                    Results.comparator(result)
+                            .isSuccess()
+                            .value(null)
+                            .seedsComparator()
+                            .isNull()
+                            .back()
+                            .compare()
+            ).isTrue();
+        }
+
+        Field field = watcher.getClass().getDeclaredField("listeners");
+        field.setAccessible(true);
+        Set<WatcherListener> gottenListeners = (Set<WatcherListener>) field.get(watcher);
+
+        assertThat(gottenListeners).hasSize(quantity);
+    }
+
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    @Test
+    void shouldCheckListenerAddition_ifItIsAdded() {
+        Path path = getPathToTestFile();
+        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+
+        WatcherListener listener = WATCHER_LISTENER_SUPPLIER.get();
+        watcher.addListener(listener);
+        Result<Object> result = watcher.addListener(listener);
+
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator()
+                        .code(CR.get(DefaultFileModificationWatcher.Code.LISTENER_IS_ALREADY_ADDED))
+                        .back()
+                        .compare()
+        ).isTrue();
+
+        Field field = watcher.getClass().getDeclaredField("listeners");
+        field.setAccessible(true);
+        Set<WatcherListener> gottenListeners = (Set<WatcherListener>) field.get(watcher);
+
+        assertThat(gottenListeners).hasSize(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
+    @Test
+    void shouldCheckListenerRemoving() {
+        Path path = getPathToTestFile();
+        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+
+        WatcherListener listener = WATCHER_LISTENER_SUPPLIER.get();
+        watcher.addListener(listener);
+        Result<Object> result = watcher.removeListener(listener);
+
+        assertThat(
+                Results.comparator(result)
+                        .isSuccess()
+                        .value(null)
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
+
+        Field field = watcher.getClass().getDeclaredField("listeners");
+        field.setAccessible(true);
+        Set<WatcherListener> gottenListeners = (Set<WatcherListener>) field.get(watcher);
+
+        assertThat(gottenListeners).hasSize(0);
+    }
+
+    @Test
+    void shouldCheckListenerRemoving_ifItIsAbsence() {
+        Path path = getPathToTestFile();
+        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+
+        WatcherListener listener = WATCHER_LISTENER_SUPPLIER.get();
+        Result<Object> result = watcher.removeListener(listener);
+
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator()
+                        .code(CR.get(DefaultFileModificationWatcher.Code.LISTENER_IS_ALREADY_REMOVED))
+                        .back()
+                        .compare()
+        ).isTrue();
     }
 
     private Path getPathToTestFile() {

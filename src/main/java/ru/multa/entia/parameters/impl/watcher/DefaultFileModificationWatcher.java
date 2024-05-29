@@ -1,12 +1,15 @@
 package ru.multa.entia.parameters.impl.watcher;
 
 import ru.multa.entia.parameters.api.watcher.Watcher;
+import ru.multa.entia.parameters.api.watcher.WatcherListener;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
 import java.nio.file.Path;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -17,7 +20,9 @@ public class DefaultFileModificationWatcher implements Watcher {
     public enum Code {
         INVALID_PATH,
         ALREADY_STARTED,
-        ALREADY_STOPPED
+        ALREADY_STOPPED,
+        LISTENER_IS_ALREADY_ADDED,
+        LISTENER_IS_ALREADY_REMOVED
     }
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
@@ -25,9 +30,12 @@ public class DefaultFileModificationWatcher implements Watcher {
         CR.update(Code.INVALID_PATH, "parameters:watcher.file-modification.default:invalid-path");
         CR.update(Code.ALREADY_STARTED, "parameters:watcher.file-modification.default:already-started");
         CR.update(Code.ALREADY_STOPPED, "parameters:watcher.file-modification.default:already-stopped");
+        CR.update(Code.LISTENER_IS_ALREADY_ADDED, "parameters:watcher.file-modification.default:listener-is-already-added");
+        CR.update(Code.LISTENER_IS_ALREADY_REMOVED, "parameters:watcher.file-modification.default:listener-is-already-removed");
     }
 
     private final AtomicBoolean executed = new AtomicBoolean(false);
+    private final Set<WatcherListener> listeners = ConcurrentHashMap.newKeySet();
     private final Path directoryPath;
     private final String fileName;
     private final Supplier<ExecutorService> serviceSupplier;
@@ -82,8 +90,22 @@ public class DefaultFileModificationWatcher implements Watcher {
         return DefaultResultBuilder.<Object>fail(CR.get(Code.ALREADY_STOPPED));
     }
 
-    private void execute() {
+    @Override
+    public Result<Object> addListener(final WatcherListener listener) {
+        return listeners.add(listener)
+                ? DefaultResultBuilder.<Object>ok()
+                : DefaultResultBuilder.<Object>fail(CR.get(Code.LISTENER_IS_ALREADY_ADDED));
+    }
 
+    @Override
+    public Result<Object> removeListener(final WatcherListener listener) {
+        return listeners.remove(listener)
+                ? DefaultResultBuilder.<Object>ok()
+                : DefaultResultBuilder.<Object>fail(CR.get(Code.LISTENER_IS_ALREADY_REMOVED));
+    }
+
+    private void execute() {
+        // TODO: impl
     }
 
     private static class WatcherThreadFactory implements ThreadFactory {
