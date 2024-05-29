@@ -139,9 +139,36 @@ class DefaultFileModificationWatcherTest {
         ).isTrue();
     }
 
+    @SneakyThrows
     @Test
     void shouldCheckStopping() {
+        Path path = getPathToTestFile();
 
+        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        watcher.start();
+        Result<Object> result = watcher.stop();
+
+        assertThat(
+                Results.comparator(result)
+                        .isSuccess()
+                        .value(null)
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
+
+        Class<? extends Watcher> type = watcher.getClass();
+        Field field = type.getDeclaredField("executed");
+        field.setAccessible(true);
+        AtomicBoolean gottenExecuted = (AtomicBoolean) field.get(watcher);
+
+        field = type.getDeclaredField("service");
+        field.setAccessible(true);
+        Object gottenService = field.get(watcher);
+
+        assertThat(gottenExecuted.get()).isFalse();
+        assertThat(gottenService).isNull();
     }
 
     private Path getPathToTestFile() {

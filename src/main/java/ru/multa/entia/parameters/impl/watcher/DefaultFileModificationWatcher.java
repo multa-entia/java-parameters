@@ -74,7 +74,9 @@ public class DefaultFileModificationWatcher implements Watcher {
     @Override
     public Result<Object> stop() {
         if (executed.compareAndSet(true, false)) {
-            return null;
+            service.shutdown();
+            service = null;
+            return DefaultResultBuilder.<Object>ok();
         }
 
         return DefaultResultBuilder.<Object>fail(CR.get(Code.ALREADY_STOPPED));
