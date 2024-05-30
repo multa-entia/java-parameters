@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import ru.multa.entia.fakers.impl.Faker;
 import ru.multa.entia.parameters.api.watcher.Watcher;
 import ru.multa.entia.parameters.api.watcher.WatcherListener;
@@ -13,10 +15,12 @@ import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.utils.Results;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.*;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -284,97 +288,57 @@ class DefaultFileModificationWatcherTest {
         ).isTrue();
     }
 
+    @SneakyThrows
+    @Test
+    void shouldCheckExecution() {
+        Path path = getPathToTestFile();
+        AtomicReference<Object> holder = new AtomicReference<>();
+
+        Supplier<WatcherListener> watcherListenerSupplier = () -> {
+            WatcherListener listener = Mockito.mock(WatcherListener.class);
+            Mockito
+                    .doAnswer(new Answer<Void>() {
+                        @Override
+                        public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+                            holder.set(invocationOnMock.getArgument(0));
+                            return null;
+                        }
+                    })
+                    .when(listener)
+                    .notifyListener(Mockito.any());
+
+            return listener;
+        };
+
+        Runnable fileModificationRunnable = () -> {
+            try {
+                Files.writeString(path, String.format("int_value: %s", Faker.int_().between(0, 1000)));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        watcher.addListener(watcherListenerSupplier.get());
+
+        watcher.start();
+        new Thread(fileModificationRunnable).start();
+
+        Thread.sleep(100);
+        watcher.stop();
+
+        assertThat(holder.get()).isNotNull();
+        assertThat(holder.get().getClass()).isEqualTo(DefaultFileWatcherResult.class);
+        DefaultFileWatcherResult result = (DefaultFileWatcherResult) holder.get();
+        assertThat(result.kind()).isEqualTo(DefaultFileWatcherResult.Kind.MODIFIED);
+        assertThat(result.path()).isEqualTo(path);
+    }
+
     private Path getPathToTestFile() {
         String path = System.getProperty("user.dir")
-                + "\\src\\test\\resource\\"
+                + "\\src\\test\\resources\\"
                 + getClass().getPackageName().replace('.', '\\')
                 + "\\" + getClass().getSimpleName() + ".txt";
         return Path.of(path);
     }
-
-    // TODO: del
-//        String absPath = System.getProperty("user.dir");
-////        System.out.println(absPath);
-//
-////        ""
-//
-//        Path path = Paths.get("");
-//        Path path1 = Paths.get("");
-//        Path path2 = Paths.get("");
-//        Path path3 = Paths.get("C:\\Users\\KasymbekovPN\\projects\\multa-entia\\java-parameters\\text.txt");
-//
-////        System.out.println(path);
-////        System.out.println(path1);
-////        System.out.println(path2);
-//
-//        System.out.println("path: " + path);
-//        System.out.println("parent: " + path.getParent());
-//        System.out.println("name: " + path.getFileName());
-//        System.out.println("path: " + path3);
-//        System.out.println("parent: " + path3.getParent());
-//        System.out.println("name: " + path3.getFileName());
-
-//        String absPath = System.getProperty("user.dir");
-//        absPath += "\\src\\test\\resources\\";
-//        absPath += getClass().getPackageName().replace('.', '\\');
-//        absPath += "\\" + getClass().getSimpleName() + ".txt";
-//        System.out.println(absPath);
-//
-//        String string = Files.readString(Path.of(absPath));
-//        System.out.println(string);
-
-//    /*
-//
-//        // TODO: del
-//    @Test
-//    void test1() throws IOException, InterruptedException {
-////        WatchService watchService = FileSystems.getDefault().newWatchService();
-//
-//        /*
-//
-//        Path path = Paths.get("pathToDir");
-//
-//        WatchKey watchKey = path.register(
-//  watchService, StandardWatchEventKinds...);
-//
-//  WatchKey watchKey = watchService.poll();
-//
-//  WatchKey watchKey = watchService.poll(long timeout, TimeUnit units);
-//
-//  WatchKey watchKey = watchService.take();
-//
-//  watchKey.reset();
-//
-//        WatchKey key;
-//        while ((key = watchService.take()) != null) {
-//            for (WatchEvent<?> event : key.pollEvents()) {
-//                System.out.println(
-//                  "Event kind:" + event.kind()
-//                    + ". File affected: " + event.context() + ".");
-//            }
-//            key.reset();
-//        }
-//
-//         */
-//
-//    AtomicReference<WatchService> serviceHolder = new AtomicReference<>(FileSystems.getDefault().newWatchService());
-//    Path path = Path.of("C:\\Users\\KasymbekovPN\\projects\\multa-entia\\java-parameters\\src\\test\\resources\\ru\\multa\\entia\\parameters\\impl\\reader\\");
-//        path.register(serviceHolder.get(), StandardWatchEventKinds.ENTRY_MODIFY);
-//
-//    Runnable r = () -> {
-//        WatchKey key;
-//        try {
-//            while ((key = serviceHolder.get().take()) != null) {
-//                for (WatchEvent<?> pollEvent : key.pollEvents()) {
-//                    System.out.println("EKIND: " + pollEvent.kind() + ". File affected: " + pollEvent.context());
-//                }
-//                key.reset();
-//            }
-//        } catch (InterruptedException ignored) {}
-//    };
-//    Thread t = new Thread(r);
-//        t.start();
-//
-//        Thread.sleep(3_000);
-//}
 }

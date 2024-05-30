@@ -7,7 +7,8 @@ import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
-import java.nio.file.Path;
+import java.io.IOException;
+import java.nio.file.*;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -105,7 +106,30 @@ public class DefaultFileModificationWatcher implements Watcher {
     }
 
     private void execute() {
-        // TODO: impl
+        try(WatchService watchService = FileSystems.getDefault().newWatchService()) {
+            Path path = Path.of(directoryPath.toUri());
+            path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+            WatchKey key;
+            while (executed.get() && (key = watchService.take()) != null) {
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
+                        for (WatcherListener listener : listeners) {
+                            listener.notifyListener(
+                                    DefaultFileWatcherResult.modified(Path.of(directoryPath.toString(), fileName))
+                            );
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        } finally {
+            executed.set(false);
+        }
     }
 
     private static class WatcherThreadFactory implements ThreadFactory {
