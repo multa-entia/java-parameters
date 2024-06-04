@@ -10,20 +10,20 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultReadResultTest {
+class DefaultReadResultOldTest {
 
     @Test
     void shouldCheckContentGetting() {
         String expectedContent = Faker.str_().random();
-        DefaultReadResult readResult = new DefaultReadResult(expectedContent, null, null);
+        DefaultReadResultOld readResult = new DefaultReadResultOld(expectedContent, null, null);
 
         assertThat(readResult.content()).isEqualTo(expectedContent);
     }
 
     @Test
     void shouldCheckPathGetting() {
-        Path expectedPath = Path.of(Faker.str_().random());
-        DefaultReadResult readResult = new DefaultReadResult(null, expectedPath, null);
+        Path expectedPath = Path.of("/opt");
+        DefaultReadResultOld readResult = new DefaultReadResultOld(null, expectedPath, null);
 
         assertThat(readResult.path()).isEqualTo(expectedPath);
     }
@@ -34,7 +34,7 @@ class DefaultReadResultTest {
             return Mockito.mock(BasicFileAttributes.class);
         };
         BasicFileAttributes expectedAttributes = basicFileAttributesSupplier.get();
-        DefaultReadResult readResult = new DefaultReadResult(null, null, expectedAttributes);
+        DefaultReadResultOld readResult = new DefaultReadResultOld(null, null, expectedAttributes);
 
         assertThat(readResult.attributes()).isEqualTo(expectedAttributes);
     }

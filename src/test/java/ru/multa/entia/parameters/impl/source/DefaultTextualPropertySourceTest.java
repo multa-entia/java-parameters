@@ -4,10 +4,10 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.multa.entia.fakers.impl.Faker;
-import ru.multa.entia.parameters.api.reader.file.ReadResult;
-import ru.multa.entia.parameters.api.reader.file.Reader;
+import ru.multa.entia.parameters.api.reader.file.ReadResultOld;
+import ru.multa.entia.parameters.api.reader.file.ReaderOld;
 import ru.multa.entia.parameters.api.source.SourceAdapter;
-import ru.multa.entia.parameters.impl.reader.file.DefaultReadResult;
+import ru.multa.entia.parameters.impl.reader.file.DefaultReadResultOld;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -17,19 +17,18 @@ import ru.multa.entia.results.utils.Results;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class DefaultTextualPropertySourceTest {
-    private static final Function<String, Reader> READER_FUNCTION = content -> {
-        Result<ReadResult> result = DefaultResultBuilder.<ReadResult>ok(new DefaultReadResult(content, null, null));
-        Reader reader = Mockito.mock(Reader.class);
-        Mockito.when(reader.read()).thenReturn(result);
+    private static final Function<String, ReaderOld> READER_FUNCTION = content -> {
+        Result<ReadResultOld> result = DefaultResultBuilder.<ReadResultOld>ok(new DefaultReadResultOld(content, null, null));
+        ReaderOld readerOld = Mockito.mock(ReaderOld.class);
+        Mockito.when(readerOld.read()).thenReturn(result);
 
-        return reader;
+        return readerOld;
     };
 
     private static final Function<Map<String, Object>, TestAdapter> ADAPTER_FUNCTION = map -> {
@@ -60,12 +59,12 @@ class DefaultTextualPropertySourceTest {
     @Test
     void shouldCheckUpdating_ifReaderReturnedFail() {
         String expectedCode = Faker.str_().random();
-        Supplier<Reader> readerSupplier = () -> {
-            Result<ReadResult> result = DefaultResultBuilder.<ReadResult>fail(expectedCode);
-            Reader reader = Mockito.mock(Reader.class);
-            Mockito.when(reader.read()).thenReturn(result);
+        Supplier<ReaderOld> readerSupplier = () -> {
+            Result<ReadResultOld> result = DefaultResultBuilder.<ReadResultOld>fail(expectedCode);
+            ReaderOld readerOld = Mockito.mock(ReaderOld.class);
+            Mockito.when(readerOld.read()).thenReturn(result);
 
-            return reader;
+            return readerOld;
         };
 
         Result<Object> result = new DefaultTextualPropertySource(readerSupplier.get()).update();

@@ -3,7 +3,9 @@ package ru.multa.entia.parameters.impl.reader.file;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import ru.multa.entia.parameters.api.reader.file.ReadResult;
+import ru.multa.entia.parameters.api.ids.Id;
+import ru.multa.entia.parameters.api.reader.file.ReadResultOld;
+import ru.multa.entia.parameters.impl.ids.Ids;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -12,11 +14,12 @@ import ru.multa.entia.results.utils.Results;
 import java.lang.reflect.Field;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultReaderTest {
+class DefaultReaderOldTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     private static final String EXIST_PATH_NAME = "test_reader_file.yml";
     private static final String NON_EXIST_PATH_NAME = "non_exist_file.yml";
@@ -25,7 +28,7 @@ class DefaultReaderTest {
     @Test
     void shouldCheckCreationByPath() {
         Path expectedPath = Path.of(EXIST_PATH_NAME);
-        DefaultReader reader = new DefaultReader(expectedPath);
+        DefaultReaderOld reader = new DefaultReaderOld(expectedPath);
 
         Field field = reader.getClass().getDeclaredField("path");
         field.setAccessible(true);
@@ -37,7 +40,7 @@ class DefaultReaderTest {
     @SneakyThrows
     @Test
     void shouldCheckCreationByString() {
-        DefaultReader reader = new DefaultReader(EXIST_PATH_NAME);
+        DefaultReaderOld reader = new DefaultReaderOld(EXIST_PATH_NAME);
 
         Field field = reader.getClass().getDeclaredField("path");
         field.setAccessible(true);
@@ -48,13 +51,13 @@ class DefaultReaderTest {
 
     @Test
     void shouldCheckReading_ifFail() {
-        Result<ReadResult> result = new DefaultReader(calculatePath(NON_EXIST_PATH_NAME)).read();
+        Result<ReadResultOld> result = new DefaultReaderOld(calculatePath(NON_EXIST_PATH_NAME)).read();
 
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .seedsComparator()
-                        .code(CR.get(DefaultReader.Code.CANNOT_READ))
+                        .code(CR.get(DefaultReaderOld.Code.CANNOT_READ))
                         .back()
                         .compare()
         ).isTrue();
@@ -67,16 +70,16 @@ class DefaultReaderTest {
         String content = Files.readString(path);
         BasicFileAttributes attributes = Files.readAttributes(path, BasicFileAttributes.class);
 
-        Supplier<ReadResult> readResultSupplier = () -> {
-            ReadResult readResult = Mockito.mock(ReadResult.class);
-            Mockito.when(readResult.content()).thenReturn(content);
-            Mockito.when(readResult.path()).thenReturn(path);
-            Mockito.when(readResult.attributes()).thenReturn(attributes);
+        Supplier<ReadResultOld> readResultSupplier = () -> {
+            ReadResultOld readResultOld = Mockito.mock(ReadResultOld.class);
+            Mockito.when(readResultOld.content()).thenReturn(content);
+            Mockito.when(readResultOld.path()).thenReturn(path);
+            Mockito.when(readResultOld.attributes()).thenReturn(attributes);
 
-            return readResult;
+            return readResultOld;
         };
 
-        Result<ReadResult> result = new DefaultReader(path).read();
+        Result<ReadResultOld> result = new DefaultReaderOld(path).read();
 
         assertThat(
                 Results.comparator(result)
@@ -86,6 +89,17 @@ class DefaultReaderTest {
                         .isNull()
                         .compare()
         ).isTrue();
+    }
+
+    @Test
+    void shouldCheckIdGetting() {
+        Ids type = Ids.FILE;
+        Path path = Path.of(calculatePath(EXIST_PATH_NAME));
+        UUID expected = new UUID(type.getValue(), path.hashCode());
+
+        Id gotten = new DefaultReaderOld(path).getId();
+
+        assertThat(gotten.get()).isEqualTo(expected);
     }
 
     private String calculatePath(final String name) {

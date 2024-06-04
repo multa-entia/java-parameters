@@ -1,8 +1,8 @@
 package ru.multa.entia.parameters.impl.source;
 
 import lombok.EqualsAndHashCode;
-import ru.multa.entia.parameters.api.reader.file.ReadResult;
-import ru.multa.entia.parameters.api.reader.file.Reader;
+import ru.multa.entia.parameters.api.reader.file.ReadResultOld;
+import ru.multa.entia.parameters.api.reader.file.ReaderOld;
 import ru.multa.entia.parameters.api.source.PropertySource;
 import ru.multa.entia.parameters.api.source.SourceAdapter;
 import ru.multa.entia.results.api.repository.CodeRepository;
@@ -12,7 +12,6 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 @EqualsAndHashCode
 public class DefaultTextualPropertySource implements PropertySource {
@@ -29,7 +28,7 @@ public class DefaultTextualPropertySource implements PropertySource {
         CR.update(Code.NOT_PRESENT, "parameters:property-source.textual.default:not-present");
     }
 
-    private final Reader reader;
+    private final ReaderOld readerOld;
     private final SourceAdapter<String, Map<String, Object>> adapter;
 
     private Map<String, Object> rawProperties;
@@ -38,23 +37,23 @@ public class DefaultTextualPropertySource implements PropertySource {
         this(null, null);
     }
 
-    public DefaultTextualPropertySource(final Reader reader) {
-        this(reader, null);
+    public DefaultTextualPropertySource(final ReaderOld readerOld) {
+        this(readerOld, null);
     }
 
-    public DefaultTextualPropertySource(final Reader reader,
+    public DefaultTextualPropertySource(final ReaderOld readerOld,
                                         final SourceAdapter<String, Map<String, Object>> adapter) {
-        this.reader = reader;
+        this.readerOld = readerOld;
         this.adapter = Objects.requireNonNullElse(adapter, new DefaultYamlSourceAdapter());
     }
 
     @Override
     public Result<Object> update() {
-        if (reader == null) {
+        if (readerOld == null) {
             return DefaultResultBuilder.<Object>fail(CR.get(Code.READER_IS_NULL));
         }
 
-        Result<ReadResult> readerResult = reader.read();
+        Result<ReadResultOld> readerResult = readerOld.read();
         if (!readerResult.ok()) {
             return DefaultResultBuilder.<Object>fail(readerResult.seed());
         }
