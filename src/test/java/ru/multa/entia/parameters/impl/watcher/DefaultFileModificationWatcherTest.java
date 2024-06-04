@@ -8,8 +8,10 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import ru.multa.entia.fakers.impl.Faker;
+import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.watcher.Watcher;
 import ru.multa.entia.parameters.api.watcher.WatcherListener;
+import ru.multa.entia.parameters.impl.ids.Ids;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.*;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -31,6 +34,17 @@ class DefaultFileModificationWatcherTest {
     private static final Supplier<WatcherListener> WATCHER_LISTENER_SUPPLIER = () -> {
         return Mockito.mock(WatcherListener.class);
     };
+
+    @Test
+    void shouldCheckIdGetting() {
+        Ids type = Ids.FILE;
+        Path path = Paths.get("projects\\multa-entia\\java-parameters");
+        UUID expected = new UUID(type.getValue(), path.hashCode());
+
+        Id gotten = DefaultFileModificationWatcher.create(path).value().getId();
+
+        assertThat(gotten.get()).isEqualTo(expected);
+    }
 
     @ParameterizedTest
     @CsvSource(value = {

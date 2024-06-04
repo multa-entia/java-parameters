@@ -1,9 +1,11 @@
 package ru.multa.entia.parameters.impl.ids;
 
+import lombok.EqualsAndHashCode;
 import ru.multa.entia.parameters.api.ids.Id;
 
 import java.util.UUID;
 
+@EqualsAndHashCode
 public class DefaultId implements Id {
     private final UUID value;
 

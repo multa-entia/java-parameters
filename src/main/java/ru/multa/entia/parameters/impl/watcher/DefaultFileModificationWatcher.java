@@ -1,7 +1,11 @@
 package ru.multa.entia.parameters.impl.watcher;
 
+import lombok.Getter;
+import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.watcher.Watcher;
 import ru.multa.entia.parameters.api.watcher.WatcherListener;
+import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.ids.Ids;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -39,6 +43,8 @@ public class DefaultFileModificationWatcher implements Watcher {
     private final Set<WatcherListener> listeners = ConcurrentHashMap.newKeySet();
     private final Path directoryPath;
     private final String fileName;
+    @Getter
+    private final Id id;
     private final Supplier<ExecutorService> serviceSupplier;
 
     private ExecutorService service;
@@ -58,15 +64,18 @@ public class DefaultFileModificationWatcher implements Watcher {
                 new DefaultFileModificationWatcher(
                         parent,
                         fileName.toString(),
+                        path,
                         () -> {return Executors.newSingleThreadExecutor(new WatcherThreadFactory(path));}));
     }
 
     private DefaultFileModificationWatcher(final Path directoryPath,
                                            final String fileName,
+                                           final Path path,
                                            final Supplier<ExecutorService> serviceSupplier) {
         this.directoryPath = directoryPath;
         this.fileName = fileName;
         this.serviceSupplier = serviceSupplier;
+        this.id = new DefaultId(Ids.FILE, path.hashCode());
     }
 
     @Override
