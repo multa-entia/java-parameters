@@ -7,6 +7,7 @@ import java.nio.file.Path;
 record DefaultFileWatcherResult(ru.multa.entia.parameters.impl.watcher.DefaultFileWatcherResult.Kind kind,
                                        Path path) implements WatcherResult {
     public enum Kind {
+        UNKNOWN,
         CREATED,
         MODIFIED,
         DELETED
