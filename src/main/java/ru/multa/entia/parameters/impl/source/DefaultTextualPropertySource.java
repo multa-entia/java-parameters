@@ -28,6 +28,7 @@ public class DefaultTextualPropertySource implements PropertySource {
         CR.update(Code.NOT_PRESENT, "parameters:property-source.textual.default:not-present");
     }
 
+    // TODO: reader -> property-source-adapter -> property-source
     private final ReaderOld readerOld;
     private final SourceAdapter<String, Map<String, Object>> adapter;
 
