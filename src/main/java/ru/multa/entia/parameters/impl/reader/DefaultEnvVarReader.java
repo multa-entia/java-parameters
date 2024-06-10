@@ -1,8 +1,11 @@
 package ru.multa.entia.parameters.impl.reader;
 
+import lombok.Getter;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.reader.Reader;
 import ru.multa.entia.parameters.api.reader.ReaderResult;
+import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.ids.Ids;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -21,29 +24,28 @@ public class DefaultEnvVarReader implements Reader {
         CR.update(Code.VAR_NAMES_IS_EMPTY, "parameters:env-var-reader.default:var-names-is-empty");
     }
 
-    public static final String VAR_NAME_VAR_NAMES = "varNames";
-    public static final String PREFIX = "__";
-
     public static Builder builder() {
         return new Builder();
     }
 
+    @Getter
+    private final Id id;
     private final Set<String> varNames;
 
     private DefaultEnvVarReader(final Set<String> varNames) {
         this.varNames = varNames;
+        this.id = new DefaultId(Ids.ENV_VARS, "");
     }
 
     @Override
     public Result<ReaderResult> read() {
-        // TODO: impl
-        return null;
-    }
+        DefaultReaderResult.Builder builder = DefaultReaderResult
+                .builder();
+        for (String varName : varNames) {
+            builder.put(varName, System.getenv(varName));
+        }
 
-    @Override
-    public Id getId() {
-        // TODO: impl
-        return null;
+        return DefaultResultBuilder.<ReaderResult>ok(builder.build());
     }
 
     public static class Builder {

@@ -1,11 +1,12 @@
 package ru.multa.entia.parameters.impl.reader;
 
 import lombok.SneakyThrows;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import ru.multa.entia.fakers.impl.Faker;
 import ru.multa.entia.parameters.api.reader.Reader;
 import ru.multa.entia.parameters.api.reader.ReaderResult;
+import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.ids.Ids;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -16,7 +17,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.extractProperty;
 
 class DefaultEnvVarReaderTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
@@ -86,6 +86,13 @@ class DefaultEnvVarReaderTest {
         assertThat(gotten).isEqualTo(expected);
     }
 
+    @Test
+    void shouldCheckIdGetting() {
+        Reader reader = DefaultEnvVarReader.builder().addVarName(Faker.str_().random()).build().value();
+
+        assertThat(reader.getId()).isEqualTo(new DefaultId(Ids.ENV_VARS, ""));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     void shouldCheckReading_ifPropertyAbsence() {
@@ -119,14 +126,12 @@ class DefaultEnvVarReaderTest {
         ReaderResult readerResult = result.value();
         Function<Object, Set<String>> adapter = o -> {return (Set<String>) o;};
 
-        Set<String> varNames = readerResult.getAs(DefaultEnvVarReader.VAR_NAME_VAR_NAMES, adapter);
-        assertThat(varNames).isEmpty();
-
         for (String absenceProperty : absenceProperties) {
             assertThat(readerResult.get(absenceProperty)).isNull();
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldCheckReading() {
         int quantity = Faker.int_().between(2, 5);
@@ -155,9 +160,6 @@ class DefaultEnvVarReaderTest {
 
         ReaderResult readerResult = result.value();
         Function<Object, Set<String>> adapter = o -> {return (Set<String>) o;};
-
-        Set<String> varNames = readerResult.getAs(DefaultEnvVarReader.VAR_NAME_VAR_NAMES, adapter);
-        assertThat(varNames).isEqualTo(variables.keySet());
 
         for (String key : variables.keySet()) {
             assertThat(readerResult.get(key)).isEqualTo(variables.get(key));

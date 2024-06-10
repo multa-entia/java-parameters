@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum Ids {
-    FILE(0);
+    FILE(0),
+    ENV_VARS(1);
 
     private final int value;
 }
