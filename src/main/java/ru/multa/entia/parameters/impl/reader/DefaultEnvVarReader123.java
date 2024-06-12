@@ -14,7 +14,8 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DefaultEnvVarReader implements Reader {
+// TODO: del
+public class DefaultEnvVarReader123 implements Reader {
     public enum Code {
         VAR_NAMES_IS_EMPTY
     }
@@ -32,7 +33,7 @@ public class DefaultEnvVarReader implements Reader {
     private final Id id;
     private final Set<String> varNames;
 
-    private DefaultEnvVarReader(final Set<String> varNames) {
+    private DefaultEnvVarReader123(final Set<String> varNames) {
         this.varNames = varNames;
         this.id = new DefaultId(Ids.ENV_VARS, "");
     }
@@ -59,7 +60,7 @@ public class DefaultEnvVarReader implements Reader {
         public Result<Reader> build() {
             return varNames.isEmpty()
                     ? DefaultResultBuilder.<Reader>fail(CR.get(Code.VAR_NAMES_IS_EMPTY))
-                    : DefaultResultBuilder.<Reader>ok(new DefaultEnvVarReader(varNames));
+                    : DefaultResultBuilder.<Reader>ok(new DefaultEnvVarReader123(varNames));
         }
     }
 }

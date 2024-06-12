@@ -18,7 +18,7 @@ import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultEnvVarReaderTest {
+class DefaultEnvVarReader123Test {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @SneakyThrows
@@ -27,7 +27,7 @@ class DefaultEnvVarReaderTest {
         HashSet<String> expected = new HashSet<>();
         int quantity = Faker.int_().between(10, 20);
 
-        DefaultEnvVarReader.Builder builder = new DefaultEnvVarReader.Builder();
+        DefaultEnvVarReader123.Builder builder = new DefaultEnvVarReader123.Builder();
         for (int i = 0; i < quantity; i++) {
             String varName = Faker.str_().random();
             builder.addVarName(varName);
@@ -42,14 +42,14 @@ class DefaultEnvVarReaderTest {
 
     @Test
     void shouldCheckBuilding_ifVarNamesIsEmpty() {
-        Result<Reader> result = DefaultEnvVarReader.builder().build();
+        Result<Reader> result = DefaultEnvVarReader123.builder().build();
 
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .value(null)
                         .seedsComparator()
-                        .code(CR.get(DefaultEnvVarReader.Code.VAR_NAMES_IS_EMPTY))
+                        .code(CR.get(DefaultEnvVarReader123.Code.VAR_NAMES_IS_EMPTY))
                         .back()
                         .compare()
         ).isTrue();
@@ -61,7 +61,7 @@ class DefaultEnvVarReaderTest {
         HashSet<String> expected = new HashSet<>();
         int quantity = Faker.int_().between(10, 20);
 
-        DefaultEnvVarReader.Builder builder = new DefaultEnvVarReader.Builder();
+        DefaultEnvVarReader123.Builder builder = new DefaultEnvVarReader123.Builder();
         for (int i = 0; i < quantity; i++) {
             String varName = Faker.str_().random();
             builder.addVarName(varName);
@@ -88,7 +88,7 @@ class DefaultEnvVarReaderTest {
 
     @Test
     void shouldCheckIdGetting() {
-        Reader reader = DefaultEnvVarReader.builder().addVarName(Faker.str_().random()).build().value();
+        Reader reader = DefaultEnvVarReader123.builder().addVarName(Faker.str_().random()).build().value();
 
         assertThat(reader.getId()).isEqualTo(new DefaultId(Ids.ENV_VARS, ""));
     }
@@ -108,7 +108,7 @@ class DefaultEnvVarReaderTest {
             }
         }
 
-        DefaultEnvVarReader.Builder builder = DefaultEnvVarReader.builder();
+        DefaultEnvVarReader123.Builder builder = DefaultEnvVarReader123.builder();
         absenceProperties.forEach(builder::addVarName);
         Reader reader = builder.build().value();
 
@@ -143,7 +143,7 @@ class DefaultEnvVarReaderTest {
             }
         }
 
-        DefaultEnvVarReader.Builder builder = DefaultEnvVarReader.builder();
+        DefaultEnvVarReader123.Builder builder = DefaultEnvVarReader123.builder();
         variables.keySet().forEach(builder::addVarName);
         Reader reader = builder.build().value();
 

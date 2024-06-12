@@ -3,6 +3,7 @@ package ru.multa.entia.parameters.impl.reader;
 import lombok.Getter;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.reader.Reader;
+import ru.multa.entia.parameters.api.reader.ReaderResult;
 import ru.multa.entia.parameters.impl.ids.DefaultId;
 import ru.multa.entia.parameters.impl.ids.Ids;
 import ru.multa.entia.results.api.repository.CodeRepository;
@@ -15,7 +16,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-public class DefaultFileReader implements Reader<String> {
+// TODO: del
+public class DefaultFileReader123 implements Reader {
+    public enum Properties {
+        CONTENT
+    }
+
     public enum Code {
         PATH_IS_NULL,
         CANNOT_READ
@@ -35,17 +41,21 @@ public class DefaultFileReader implements Reader<String> {
     @Getter
     private final Id id;
 
-    private DefaultFileReader(final Path path, final Id id) {
+    private DefaultFileReader123(final Path path, final Id id) {
         this.path = path;
         this.id = id;
     }
 
     @Override
-    public Result<String> read() {
+    public Result<ReaderResult> read() {
         try {
-            return DefaultResultBuilder.<String>ok(Files.readString(path));
+            return DefaultResultBuilder.<ReaderResult>ok(
+                    DefaultReaderResult.builder()
+                            .put(Properties.CONTENT.name(), Files.readString(path))
+                            .build()
+            );
         } catch (IOException ex) {
-            return DefaultResultBuilder.<String>fail(CR.get(Code.CANNOT_READ));
+            return DefaultResultBuilder.<ReaderResult>fail(CR.get(Code.CANNOT_READ));
         }
     }
 
@@ -63,14 +73,14 @@ public class DefaultFileReader implements Reader<String> {
             return this;
         }
 
-        public Result<Reader<String>> build() {
-            return path != null
-                    ? DefaultResultBuilder.<Reader<String>>ok(
-                            new DefaultFileReader(
-                                    path,
-                                    Objects.requireNonNullElse(id, new DefaultId(Ids.FILE, path))))
-                    : DefaultResultBuilder.<Reader<String>>fail(CR.get(Code.PATH_IS_NULL));
+        public Result<Reader> build() {
+            if (path == null) {
+                return DefaultResultBuilder.<Reader>fail(CR.get(Code.PATH_IS_NULL));
+            }
+
+            return DefaultResultBuilder.<Reader>ok(
+                    new DefaultFileReader123(path, Objects.requireNonNullElse(id, new DefaultId(Ids.FILE, path)))
+            );
         }
     }
 }
-

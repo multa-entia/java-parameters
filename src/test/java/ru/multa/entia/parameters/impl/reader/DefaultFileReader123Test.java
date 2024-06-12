@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.reader.Reader;
+import ru.multa.entia.parameters.api.reader.ReaderResult;
 import ru.multa.entia.parameters.impl.ids.DefaultId;
 import ru.multa.entia.parameters.impl.ids.Ids;
 import ru.multa.entia.results.api.repository.CodeRepository;
@@ -18,7 +19,7 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultFileReaderTest {
+class DefaultFileReader123Test {
     private static final Path DUMMY_PATH = Path.of("/opt");
     private static final String EXIST_PATH_NAME = "test_reader_file.yml";
     private static final String NON_EXIST_PATH_NAME = "non_exist_file.yml";
@@ -28,7 +29,7 @@ class DefaultFileReaderTest {
     @SneakyThrows
     @Test
     void shouldCheckBuilderPathSetting() {
-        DefaultFileReader.Builder builder = DefaultFileReader.builder().path(DUMMY_PATH);
+        DefaultFileReader123.Builder builder = DefaultFileReader123.builder().path(DUMMY_PATH);
 
         Field field = builder.getClass().getDeclaredField("path");
         field.setAccessible(true);
@@ -41,7 +42,7 @@ class DefaultFileReaderTest {
     @Test
     void shouldCheckBuilderIdSetting() {
         Id expectedId = Mockito.mock(Id.class);
-        DefaultFileReader.Builder builder = DefaultFileReader.builder().id(expectedId);
+        DefaultFileReader123.Builder builder = DefaultFileReader123.builder().id(expectedId);
 
         Field field = builder.getClass().getDeclaredField("id");
         field.setAccessible(true);
@@ -52,14 +53,14 @@ class DefaultFileReaderTest {
 
     @Test
     void shouldCheckBuilding_ifPathNull() {
-        Result<Reader<String>> result = DefaultFileReader.builder().build();
+        Result<Reader> result = DefaultFileReader123.builder().build();
 
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .value(null)
                         .seedsComparator()
-                        .code(CR.get(DefaultFileReader.Code.PATH_IS_NULL))
+                        .code(CR.get(DefaultFileReader123.Code.PATH_IS_NULL))
                         .back()
                         .compare()
         ).isTrue();
@@ -69,7 +70,7 @@ class DefaultFileReaderTest {
     @Test
     void shouldCheckBuilding_ifIdNotSet() {
         Path expectedPath = DUMMY_PATH;
-        Result<Reader<String>> result = DefaultFileReader.builder().path(expectedPath).build();
+        Result<Reader> result = DefaultFileReader123.builder().path(expectedPath).build();
 
         assertThat(
                 Results.comparator(result)
@@ -80,7 +81,7 @@ class DefaultFileReaderTest {
                         .compare()
         ).isTrue();
 
-        Reader<String> reader = result.value();
+        Reader reader = result.value();
         assertThat(reader.getId()).isEqualTo(new DefaultId(Ids.FILE, expectedPath));
 
         Field field = reader.getClass().getDeclaredField("path");
@@ -94,7 +95,7 @@ class DefaultFileReaderTest {
     void shouldCheckBuilding() {
         Path expectedPath = DUMMY_PATH;
         Id expectedId = Mockito.mock(Id.class);
-        Result<Reader<String>> result = DefaultFileReader.builder()
+        Result<Reader> result = DefaultFileReader123.builder()
                 .path(expectedPath)
                 .id(expectedId)
                 .build();
@@ -108,7 +109,7 @@ class DefaultFileReaderTest {
                         .compare()
         ).isTrue();
 
-        Reader<String> reader = result.value();
+        Reader reader = result.value();
         assertThat(reader.getId()).isEqualTo(expectedId);
 
         Field field = reader.getClass().getDeclaredField("path");
@@ -119,16 +120,16 @@ class DefaultFileReaderTest {
 
     @Test
     void shouldCheckReading_ifFail() {
-        Reader<String> reader = DefaultFileReader.builder().path(Path.of(calculatePath(NON_EXIST_PATH_NAME))).build().value();
+        Reader reader = DefaultFileReader123.builder().path(Path.of(calculatePath(NON_EXIST_PATH_NAME))).build().value();
 
-        Result<String> result = reader.read();
+        Result<ReaderResult> result = reader.read();
 
         assertThat(
                 Results.comparator(result)
                         .isFail()
                         .value(null)
                         .seedsComparator()
-                        .code(CR.get(DefaultFileReader.Code.CANNOT_READ))
+                        .code(CR.get(DefaultFileReader123.Code.CANNOT_READ))
                         .back()
                         .compare()
         ).isTrue();
@@ -138,10 +139,10 @@ class DefaultFileReaderTest {
     @Test
     void shouldCheckReading() {
         Path path = Path.of(calculatePath(EXIST_PATH_NAME));
-        Reader<String> reader = DefaultFileReader.builder().path(path).build().value();
+        Reader reader = DefaultFileReader123.builder().path(path).build().value();
         String expectedContent = Files.readString(path);
 
-        Result<String> result = reader.read();
+        Result<ReaderResult> result = reader.read();
 
         assertThat(
                 Results.comparator(result)
@@ -152,7 +153,7 @@ class DefaultFileReaderTest {
                         .compare()
         ).isTrue();
 
-        assertThat(result.value()).isEqualTo(expectedContent);
+        assertThat(result.value().get(DefaultFileReader123.Properties.CONTENT.name())).isEqualTo(expectedContent);
     }
 
     private String calculatePath(String name) {
