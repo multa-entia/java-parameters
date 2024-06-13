@@ -1,5 +1,6 @@
 package ru.multa.entia.parameters.impl.reader;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.reader.Reader;
@@ -11,6 +12,7 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
 import java.util.*;
 
+@EqualsAndHashCode
 public class DefaultEnvVarReader implements Reader<Map<String, Object>> {
     public enum Code {
         VAR_NAMES_IS_EMPTY

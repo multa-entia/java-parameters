@@ -1,5 +1,6 @@
 package ru.multa.entia.parameters.impl.reader;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.reader.Reader;
@@ -14,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
+@EqualsAndHashCode
 public class DefaultFileReader implements Reader<String> {
     public enum Code {
         PATH_IS_NULL,
