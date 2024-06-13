@@ -4,7 +4,6 @@ import lombok.Getter;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.reader.Reader;
 import ru.multa.entia.parameters.impl.ids.DefaultId;
-import ru.multa.entia.parameters.impl.ids.Ids;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -68,7 +67,7 @@ public class DefaultEnvVarReader implements Reader<Map<String, Object>> {
                     ? DefaultResultBuilder.<Reader<Map<String, Object>>>fail(CR.get(Code.VAR_NAMES_IS_EMPTY))
                     : DefaultResultBuilder.<Reader<Map<String, Object>>>ok(
                             new DefaultEnvVarReader(
-                                    Objects.requireNonNullElse(id, new DefaultId(Ids.ENV_VARS, "")),
+                                    Objects.requireNonNullElse(id, DefaultId.createIdForEnvVar()),
                                     varNames));
         }
     }

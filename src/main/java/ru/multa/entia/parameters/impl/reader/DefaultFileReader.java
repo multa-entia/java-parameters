@@ -4,7 +4,6 @@ import lombok.Getter;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.reader.Reader;
 import ru.multa.entia.parameters.impl.ids.DefaultId;
-import ru.multa.entia.parameters.impl.ids.Ids;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -68,7 +67,7 @@ public class DefaultFileReader implements Reader<String> {
                     ? DefaultResultBuilder.<Reader<String>>ok(
                             new DefaultFileReader(
                                     path,
-                                    Objects.requireNonNullElse(id, new DefaultId(Ids.FILE, path))))
+                                    Objects.requireNonNullElse(id, DefaultId.createIdForFile(path))))
                     : DefaultResultBuilder.<Reader<String>>fail(CR.get(Code.PATH_IS_NULL));
         }
     }

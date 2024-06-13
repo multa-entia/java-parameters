@@ -1,1 +1,1 @@
-int_value: 905
+int_value: 69
