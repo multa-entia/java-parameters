@@ -1,10 +1,6 @@
 package ru.multa.entia.parameters.api.controller;
 
-import ru.multa.entia.parameters.api.property.Property;
-import ru.multa.entia.parameters.api.source.PropertySource;
-import ru.multa.entia.parameters.api.watcher.Watcher;
 import ru.multa.entia.parameters.api.watcher.WatcherListener;
-import ru.multa.entia.results.api.result.Result;
 
 public interface ParametersController extends WatcherListener {
 //    Result<Object> registerSource(PropertySource source, Watcher watcher);

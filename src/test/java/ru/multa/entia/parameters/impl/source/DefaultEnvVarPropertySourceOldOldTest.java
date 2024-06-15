@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultEnvVarPropertySourceOldTest {
+class DefaultEnvVarPropertySourceOldOldTest {
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
