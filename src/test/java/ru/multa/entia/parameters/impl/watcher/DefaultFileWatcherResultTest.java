@@ -1,8 +1,6 @@
 package ru.multa.entia.parameters.impl.watcher;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.multa.entia.fakers.impl.Faker;
 
 import java.nio.file.Path;
 
