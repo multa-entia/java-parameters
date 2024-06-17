@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class DefaultAbstractPropertyTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
+    private static final String CODE = Faker.str_().random();
 
     @Test
     void shouldCheckNameGetting() {
@@ -40,12 +41,10 @@ class DefaultAbstractPropertyTest {
     void shouldCheckSettingGetting() {
         String expectedValue = Faker.str_().random();
         TestProperty property = new TestProperty(Faker.str_().random());
-        property.set(expectedValue);
-
-        Result<String> result = property.get();
+        Result<String> setResult = property.set(expectedValue);
 
         assertThat(
-                Results.comparator(result)
+                Results.comparator(setResult)
                         .isSuccess()
                         .value(expectedValue)
                         .seedsComparator()
@@ -53,17 +52,46 @@ class DefaultAbstractPropertyTest {
                         .back()
                         .compare()
         ).isTrue();
+
+        Result<String> getResult = property.get();
+        assertThat(Results.equal(getResult, setResult)).isTrue();
+    }
+
+    @Test
+    void shouldCheckSettingGetting_badSecondAttempt() {
+        String firstExpectedValue = Faker.str_().random();
+        String secondExpectedValue = Faker.str_().random();
+        TestProperty property = new TestProperty(Faker.str_().random());
+        Result<String> firstSetResult = property.set(firstExpectedValue);
+        Result<String> secondSetResult = property.set(secondExpectedValue);
+
+        assertThat(
+                Results.comparator(secondSetResult)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator()
+                        .code(CODE)
+                        .back()
+                        .compare()
+        ).isTrue();
+
+        Result<String> getResult = property.get();
+        assertThat(Results.equal(getResult, firstSetResult)).isTrue();
     }
 
     private static class TestProperty extends DefaultAbstractProperty<String>  {
+        private boolean first = true;
         public TestProperty(final String name) {
             super(name);
         }
 
         @Override
-        public Result<String> set(final Object object) {
-            data = DefaultResultBuilder.<String>ok(String.valueOf(object));
-            return data;
+        protected Result<String> checkAndGet(Object object) {
+            if (first) {
+                first = false;
+                return DefaultResultBuilder.<String>ok(String.valueOf(object));
+            }
+            return DefaultResultBuilder.<String>fail(CODE);
         }
     }
 }

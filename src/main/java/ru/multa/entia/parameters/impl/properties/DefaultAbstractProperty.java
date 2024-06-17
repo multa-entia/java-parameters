@@ -25,7 +25,19 @@ public abstract class DefaultAbstractProperty<T> implements Property<T> {
     protected Result<T> data = DefaultResultBuilder.<T>fail(CR.get(Code.IS_NOT_SET));
 
     @Override
+    public Result<T> set(final Object object) {
+        Result<T> result = checkAndGet(object);
+        if (result.ok()) {
+            data = result;
+        }
+
+        return result;
+    }
+
+    @Override
     public Result<T> get() {
         return data;
     }
+
+    protected abstract Result<T> checkAndGet(Object object);
 }
