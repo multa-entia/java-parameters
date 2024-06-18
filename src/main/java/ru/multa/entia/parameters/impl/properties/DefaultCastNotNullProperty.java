@@ -5,17 +5,18 @@ import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
 import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 
-public class DefaultNotNullProperty<T> extends DefaultNullableProperty<T>{
+public class DefaultCastNotNullProperty<T> extends DefaultCastNullableProperty<T> {
     public enum Code {
         IS_NULL
     }
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
-        CR.update(Code.IS_NULL, "parameters:nullable-property.default:is-null");
+        CR.update(Code.IS_NULL, "parameters:not-null-cast-property.default:is-null");
     }
 
-    public DefaultNotNullProperty(final String name, final Class<T> type) {
+    public DefaultCastNotNullProperty(final String name,
+                                      final Class<T> type) {
         super(name, type);
     }
 

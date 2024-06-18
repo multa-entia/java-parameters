@@ -9,13 +9,13 @@ import ru.multa.entia.results.utils.Results;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DefaultNullablePropertyTest {
+class DefaultCastNullablePropertyTest {
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
 
     @Test
     void shouldCheckSettingGetting_ifNull() {
         String expected = null;
-        DefaultNullableProperty<String> property = new DefaultNullableProperty<>(Faker.str_().random(), String.class);
+        DefaultCastNullableProperty<String> property = new DefaultCastNullableProperty<>(Faker.str_().random(), String.class);
         Result<String> result = property.set(expected);
 
         assertThat(
@@ -31,7 +31,7 @@ class DefaultNullablePropertyTest {
 
     @Test
     void shouldCheckSettingGetting_ifBadCast() {
-        DefaultNullableProperty<Integer> property = new DefaultNullableProperty<>(Faker.str_().random(), Integer.class);
+        DefaultCastNullableProperty<Integer> property = new DefaultCastNullableProperty<>(Faker.str_().random(), Integer.class);
         Result<Integer> result = property.set(Faker.str_().random());
 
         assertThat(
@@ -39,7 +39,7 @@ class DefaultNullablePropertyTest {
                         .isFail()
                         .value(null)
                         .seedsComparator()
-                        .code(CR.get(DefaultNullableProperty.Code.BAD_CAST))
+                        .code(CR.get(DefaultCastNullableProperty.Code.BAD_CAST))
                         .back()
                         .compare()
         ).isTrue();
@@ -48,7 +48,7 @@ class DefaultNullablePropertyTest {
     @Test
     void shouldCheckSettingGetting() {
         String expected = Faker.str_().random();
-        DefaultNullableProperty<String> property = new DefaultNullableProperty<>(Faker.str_().random(), String.class);
+        DefaultCastNullableProperty<String> property = new DefaultCastNullableProperty<>(Faker.str_().random(), String.class);
         Result<String> result = property.set(expected);
 
         assertThat(
