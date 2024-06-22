@@ -48,6 +48,24 @@ class DefaultAdaptNullablePropertyTest {
     }
 
     @Test
+    void shouldCheckSettingGetting_ifAdapterReturnedNull() {
+        DefaultAdaptNullableProperty<String> property = new DefaultAdaptNullableProperty<>(Faker.str_().random(), input -> {
+            return null;
+        });
+        Result<String> result = property.set(Faker.int_().random());
+
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator()
+                        .code(CR.get(DefaultAdaptNullableProperty.Code.ADAPTER_RETURNED_NULL))
+                        .back()
+                        .compare()
+        ).isTrue();
+    }
+
+    @Test
     void shouldCheckSettingGetting_ifAdapterReturnedFail() {
         Function<Object, Result<Float>> adapter = o -> {
             return DefaultResultBuilder.<Float>fail(Faker.str_().random());

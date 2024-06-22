@@ -12,12 +12,14 @@ import java.util.function.Function;
 public class DefaultAdaptNullableProperty<T> extends DefaultAbstractProperty<T>{
     public enum Code {
         ADAPTER_IS_NULL,
+        ADAPTER_RETURNED_NULL,
         ADAPT_ERROR
     }
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
         CR.update(Code.ADAPTER_IS_NULL, "parameters:not-null-adapt-property.default:adapter-is-null");
+        CR.update(Code.ADAPTER_RETURNED_NULL, "parameters:not-null-adapt-property.default:adapter-returned-null");
         CR.update(Code.ADAPT_ERROR, "parameters:not-null-adapt-property.default:adapt-error");
     }
 
@@ -38,6 +40,9 @@ public class DefaultAdaptNullableProperty<T> extends DefaultAbstractProperty<T>{
         }
 
         Result<T> result = adapter.apply(object);
+        if (result == null) {
+            return DefaultResultBuilder.<T>fail(CR.get(Code.ADAPTER_RETURNED_NULL));
+        }
         if (result.ok()) {
             return result;
         }
