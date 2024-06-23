@@ -6,9 +6,11 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import ru.multa.entia.fakers.impl.Faker;
+import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.properties.Property;
 import ru.multa.entia.parameters.api.readers.Reader;
 import ru.multa.entia.parameters.api.sources.PropertySource;
+import ru.multa.entia.parameters.impl.ids.DefaultId;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -16,6 +18,7 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 import ru.multa.entia.results.utils.Results;
 
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -303,6 +306,21 @@ class DefaultPropertySourceTest {
         ).isTrue();
 
         assertThat(holder.get()).isEqualTo(value);
+    }
+
+    @Test
+    void shouldCheckIdGetting() {
+        Id expectedId = DefaultId.createIdForFile(Path.of("/opt"));
+        Supplier<TestReader> readerSupplier = () -> {
+            TestReader reader = Mockito.mock(TestReader.class);
+            Mockito.when(reader.getId()).thenReturn(expectedId);
+
+            return reader;
+        };
+
+        PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
+
+        assertThat(source.getId()).isEqualTo(expectedId);
     }
 
     private interface TestStringProperty extends Property<String> {}

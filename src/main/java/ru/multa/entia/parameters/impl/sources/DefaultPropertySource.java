@@ -1,6 +1,7 @@
 package ru.multa.entia.parameters.impl.sources;
 
 import lombok.RequiredArgsConstructor;
+import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.properties.Property;
 import ru.multa.entia.parameters.api.readers.Reader;
 import ru.multa.entia.parameters.api.sources.PropertySource;
@@ -81,6 +82,11 @@ public class DefaultPropertySource implements PropertySource {
         }
 
         return DefaultResultBuilder.<Object>ok();
+    }
+    
+    @Override
+    public Id getId() {
+        return reader.getId();
     }
 
     public static class Builder {
