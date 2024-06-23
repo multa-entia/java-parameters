@@ -342,10 +342,10 @@ class DefaultFileModificationWatcherTest {
         watcher.stop();
 
         assertThat(holder.get()).isNotNull();
-        assertThat(holder.get().getClass()).isEqualTo(DefaultFileWatcherResult.class);
-        DefaultFileWatcherResult result = (DefaultFileWatcherResult) holder.get();
-        assertThat(result.kind()).isEqualTo(DefaultFileWatcherResult.Kind.MODIFIED);
-        assertThat(result.path()).isEqualTo(path);
+        assertThat(holder.get().getClass()).isEqualTo(DefaultFileWatcherEvent.class);
+        DefaultFileWatcherEvent result = (DefaultFileWatcherEvent) holder.get();
+        assertThat(result.kind()).isEqualTo(DefaultFileWatcherEvent.Kind.MODIFIED);
+        assertThat(result.watcherId()).isEqualTo(watcher.getId());
     }
 
     private Path getPathToTestFile() {
