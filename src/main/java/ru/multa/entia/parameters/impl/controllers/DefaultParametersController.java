@@ -25,7 +25,7 @@ public class DefaultParametersController implements ParametersController {
     }
 
     private final Map<Id, PropertySource> propertySources;
-    private final AtomicBoolean inProcess = new AtomicBoolean(false);
+    private final AtomicBoolean doing = new AtomicBoolean(false);
 
     public static Builder builder() {
         return new Builder();

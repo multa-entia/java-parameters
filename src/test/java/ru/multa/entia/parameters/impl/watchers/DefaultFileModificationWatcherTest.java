@@ -342,9 +342,9 @@ class DefaultFileModificationWatcherTest {
         watcher.stop();
 
         assertThat(holder.get()).isNotNull();
-        assertThat(holder.get().getClass()).isEqualTo(DefaultFileWatcherEvent.class);
-        DefaultFileWatcherEvent result = (DefaultFileWatcherEvent) holder.get();
-        assertThat(result.kind()).isEqualTo(DefaultFileWatcherEvent.Kind.MODIFIED);
+        assertThat(holder.get().getClass()).isEqualTo(DefaultWatcherEvent.class);
+        DefaultWatcherEvent result = (DefaultWatcherEvent) holder.get();
+        assertThat(result.kind()).isEqualTo(WatcherEventKind.MODIFIED);
         assertThat(result.watcherId()).isEqualTo(watcher.getId());
     }
 

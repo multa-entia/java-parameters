@@ -123,7 +123,7 @@ public class DefaultFileModificationWatcher implements Watcher {
                     if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
                         for (WatcherListener listener : listeners) {
                             listener.notifyListener(
-                                    DefaultFileWatcherEvent.modified(getId())
+                                    DefaultWatcherEvent.modified(getId())
                             );
                         }
                     }
