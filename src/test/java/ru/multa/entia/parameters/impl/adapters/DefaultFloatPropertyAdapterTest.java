@@ -30,7 +30,6 @@ class DefaultFloatPropertyAdapterTest {
     @Test
     void shouldCheckAdaptation_onFailAdaptation() {
         String object = Faker.str_().fromTemplate("[x-z]{3:7}");
-        System.out.println(object);// TODO: temp
         Result<Float> result = new DefaultFloatPropertyAdapter().apply(object);
 
         assertThat(
@@ -47,7 +46,6 @@ class DefaultFloatPropertyAdapterTest {
     @Test
     void shouldCheckAdaptation() {
         String object = Faker.str_().fromTemplate("[1-9]{3:4}.[1-9]{3:4}");
-        System.out.println(object);
         float expected = Float.parseFloat(object);
         Result<Float> result = new DefaultFloatPropertyAdapter().apply(object);
 

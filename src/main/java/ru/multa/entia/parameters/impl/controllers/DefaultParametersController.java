@@ -16,12 +16,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DefaultParametersController implements ParametersController {
     public enum Code {
-        PROPERTY_SOURCES_IS_EMPTY
+        PROPERTY_SOURCES_IS_EMPTY,
+        ALREADY_STARTED,
+        ALREADY_STOPPED,
+        SOURCE_PROPERTY_ABSENCE
     }
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
     static {
         CR.update(Code.PROPERTY_SOURCES_IS_EMPTY, "parameters:parameters-controller.default:property-sources-is-empty");
+        CR.update(Code.ALREADY_STARTED, "parameters:parameters-controller.default:already-started");
+        CR.update(Code.ALREADY_STOPPED, "parameters:parameters-controller.default:already-stopped");
+        CR.update(Code.SOURCE_PROPERTY_ABSENCE, "parameters:parameters-controller.default:source-property-absence");
     }
 
     private final Map<Id, PropertySource> propertySources;
@@ -37,19 +43,27 @@ public class DefaultParametersController implements ParametersController {
 
     @Override
     public Result<Object> start() {
-        // TODO: impl
-        return null;
+        return doing.compareAndSet(false, true)
+                ? DefaultResultBuilder.<Object>ok()
+                : DefaultResultBuilder.<Object>fail(CR.get(Code.ALREADY_STARTED));
     }
 
     @Override
     public Result<Object> stop() {
-        // TODO: impl
-        return null;
+        return doing.compareAndSet(true, false)
+                ? DefaultResultBuilder.<Object>ok()
+                : DefaultResultBuilder.<Object>fail(CR.get(Code.ALREADY_STOPPED));
     }
 
     @Override
-    public void notifyListener(final WatcherEvent watcherEvent) {
-        // TODO: impl
+    public Result<Object> notifyListener(final WatcherEvent watcherEvent) {
+        Id id = watcherEvent.watcherId();
+        if (propertySources.containsKey(id)) {
+            Result<Object> result = propertySources.get(id).update(watcherEvent);
+            return result.ok() ? DefaultResultBuilder.<Object>ok() : result;
+        }
+
+        return DefaultResultBuilder.<Object>fail(CR.get(Code.SOURCE_PROPERTY_ABSENCE));
     }
 
     public static class Builder {

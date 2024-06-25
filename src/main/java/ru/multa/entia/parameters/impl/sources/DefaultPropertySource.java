@@ -5,6 +5,7 @@ import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.properties.Property;
 import ru.multa.entia.parameters.api.readers.Reader;
 import ru.multa.entia.parameters.api.sources.PropertySource;
+import ru.multa.entia.parameters.api.watchers.WatcherEvent;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -61,7 +62,7 @@ public class DefaultPropertySource implements PropertySource {
     }
 
     @Override
-    public synchronized Result<Object> update() {
+    public synchronized Result<Object> update(final WatcherEvent watcherEvent) {
         Result<Map<String, Object>> readerResult = reader.read();
         if (!readerResult.ok()) {
             return new DefaultResultBuilder<Object>()
