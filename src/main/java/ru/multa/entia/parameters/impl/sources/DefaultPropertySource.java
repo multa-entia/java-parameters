@@ -6,6 +6,7 @@ import ru.multa.entia.parameters.api.properties.Property;
 import ru.multa.entia.parameters.api.readers.Reader;
 import ru.multa.entia.parameters.api.sources.PropertySource;
 import ru.multa.entia.parameters.api.watchers.WatcherEvent;
+import ru.multa.entia.parameters.impl.watchers.WatcherEventKind;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -20,7 +21,9 @@ public class DefaultPropertySource implements PropertySource {
         READER_IS_NULL,
         READER_RETURNED_FAIL,
         PROPERTY_ALREADY_REGISTERED,
-        PROPERTY_ALREADY_UNREGISTERED
+        PROPERTY_ALREADY_UNREGISTERED,
+        BAD_WATCHER_EVENT_ID,
+        BAD_WATCHER_EVENT_KIND
     }
 
     private static final CodeRepository CR = DefaultCodeRepository.getDefaultInstance();
@@ -29,6 +32,8 @@ public class DefaultPropertySource implements PropertySource {
         CR.update(Code.READER_RETURNED_FAIL, "parameters:property-source.default:reader-returned-fail");
         CR.update(Code.PROPERTY_ALREADY_REGISTERED, "parameters:property-source.default:property-already-registered");
         CR.update(Code.PROPERTY_ALREADY_UNREGISTERED, "parameters:property-source.default:property-already-unregistered");
+        CR.update(Code.BAD_WATCHER_EVENT_ID, "parameters:property-source.default:bad-watcher-event-id");
+        CR.update(Code.BAD_WATCHER_EVENT_KIND, "parameters:property-source.default:bad-watcher-event-kind");
     }
 
     private final Map<String, Property<?>> properties = new HashMap<>();
@@ -63,6 +68,12 @@ public class DefaultPropertySource implements PropertySource {
 
     @Override
     public synchronized Result<Object> update(final WatcherEvent watcherEvent) {
+        if (!getId().equals(watcherEvent.watcherId())) {
+            return DefaultResultBuilder.<Object>fail(CR.get(Code.BAD_WATCHER_EVENT_ID));
+        } else if (!WatcherEventKind.MODIFIED.equals(watcherEvent.kind())) {
+            return DefaultResultBuilder.<Object>fail(CR.get(Code.BAD_WATCHER_EVENT_KIND));
+        }
+
         Result<Map<String, Object>> readerResult = reader.read();
         if (!readerResult.ok()) {
             return new DefaultResultBuilder<Object>()

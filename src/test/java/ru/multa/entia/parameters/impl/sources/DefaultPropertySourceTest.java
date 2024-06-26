@@ -11,6 +11,7 @@ import ru.multa.entia.parameters.api.properties.Property;
 import ru.multa.entia.parameters.api.readers.Reader;
 import ru.multa.entia.parameters.api.sources.PropertySource;
 import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.watchers.DefaultWatcherEvent;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -186,129 +187,180 @@ class DefaultPropertySourceTest {
     }
 
     @Test
+    void shouldCheckUpdating_ifBadEventId() {
+        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        Supplier<TestReader> readerSupplier = () -> {
+            TestReader reader = Mockito.mock(TestReader.class);
+            Mockito.when(reader.getId()).thenReturn(id);
+
+            return reader;
+        };
+
+        PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
+        Result<Object> result = source.update(DefaultWatcherEvent.modified(DefaultId.createIdForFile(Path.of("/etc"))));
+
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator().code(CR.get(DefaultPropertySource.Code.BAD_WATCHER_EVENT_ID))
+                        .back()
+                        .compare()
+        ).isTrue();
+    }
+
+    @Test
+    void shouldCheckUpdating_ifBadEventKind() {
+        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        Supplier<TestReader> readerSupplier = () -> {
+            TestReader reader = Mockito.mock(TestReader.class);
+            Mockito.when(reader.getId()).thenReturn(id);
+
+            return reader;
+        };
+
+        PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
+        Result<Object> result = source.update(DefaultWatcherEvent.deleted(id));
+
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator().code(CR.get(DefaultPropertySource.Code.BAD_WATCHER_EVENT_KIND))
+                        .back()
+                        .compare()
+        ).isTrue();
+    }
+
+    @Test
     void shouldCheckUpdating_ifReaderRetFail() {
-        // TODO: restore
-//        Supplier<TestReader> readerSupplier = () -> {
-//            Result<Map<String, Object>> result = DefaultResultBuilder.<Map<String, Object>>fail(Faker.str_().random());
-//            TestReader reader = Mockito.mock(TestReader.class);
-//            Mockito.when(reader.read()).thenReturn(result);
-//
-//            return reader;
-//        };
-//
-//        PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
-//        Result<Object> result = source.update();
-//
-//        assertThat(
-//                Results.comparator(result)
-//                        .isFail()
-//                        .value(null)
-//                        .seedsComparator()
-//                        .code(CR.get(DefaultPropertySource.Code.READER_RETURNED_FAIL))
-//                        .back()
-//                        .compare()
-//        ).isTrue();
+        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        Supplier<TestReader> readerSupplier = () -> {
+            Result<Map<String, Object>> result = DefaultResultBuilder.<Map<String, Object>>fail(Faker.str_().random());
+            TestReader reader = Mockito.mock(TestReader.class);
+            Mockito.when(reader.read()).thenReturn(result);
+            Mockito.when(reader.getId()).thenReturn(id);
+
+            return reader;
+        };
+
+        PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
+        Result<Object> result = source.update(DefaultWatcherEvent.modified(id));
+
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator()
+                        .code(CR.get(DefaultPropertySource.Code.READER_RETURNED_FAIL))
+                        .back()
+                        .compare()
+        ).isTrue();
     }
 
     @SneakyThrows
     @Test
     void shouldCheckUpdating_ifReaderRetFailOnSecondTime() {
-        // TODO: restore
-//        HashMap<String, Object> expectedData = new HashMap<>() {{
-//            put(Faker.str_().random(), Faker.str_().random());
-//        }};
-//        AtomicBoolean first = new AtomicBoolean(true);
-//
-//        Supplier<TestReader> readerSupplier = () -> {
-//            TestReader reader = Mockito.mock(TestReader.class);
-//            Mockito
-//                    .when(reader.read())
-//                    .thenAnswer(new Answer<Result<Map<String, Object>>>() {
-//                        @Override
-//                        public Result<Map<String, Object>> answer(InvocationOnMock invocationOnMock) throws Throwable {
-//                            if (first.get()) {
-//                                first.set(false);
-//                                return DefaultResultBuilder.<Map<String, Object>>ok(expectedData);
-//                            }
-//                            return DefaultResultBuilder.<Map<String, Object>>fail(Faker.str_().random());
-//                        }
-//                    });
-//            return reader;
-//        };
-//
-//        PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
-//        source.update();
-//        Result<Object> result = source.update();
-//
-//        assertThat(
-//                Results.comparator(result)
-//                        .isFail()
-//                        .value(null)
-//                        .seedsComparator()
-//                        .code(CR.get(DefaultPropertySource.Code.READER_RETURNED_FAIL))
-//                        .back()
-//                        .compare()
-//        ).isTrue();
-//
-//        Field field = source.getClass().getDeclaredField("data");
-//        field.setAccessible(true);
-//        Object gotten = field.get(source);
-//
-//        assertThat(gotten).isEqualTo(expectedData);
+        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        HashMap<String, Object> expectedData = new HashMap<>() {{
+            put(Faker.str_().random(), Faker.str_().random());
+        }};
+        AtomicBoolean first = new AtomicBoolean(true);
+
+        Supplier<TestReader> readerSupplier = () -> {
+            TestReader reader = Mockito.mock(TestReader.class);
+            Mockito
+                    .when(reader.read())
+                    .thenAnswer(new Answer<Result<Map<String, Object>>>() {
+                        @Override
+                        public Result<Map<String, Object>> answer(InvocationOnMock invocationOnMock) throws Throwable {
+                            if (first.get()) {
+                                first.set(false);
+                                return DefaultResultBuilder.<Map<String, Object>>ok(expectedData);
+                            }
+                            return DefaultResultBuilder.<Map<String, Object>>fail(Faker.str_().random());
+                        }
+                    });
+            Mockito.when(reader.getId()).thenReturn(id);
+
+            return reader;
+        };
+
+        PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
+        DefaultWatcherEvent event = DefaultWatcherEvent.modified(id);
+        source.update(event);
+        Result<Object> result = source.update(event);
+
+        assertThat(
+                Results.comparator(result)
+                        .isFail()
+                        .value(null)
+                        .seedsComparator()
+                        .code(CR.get(DefaultPropertySource.Code.READER_RETURNED_FAIL))
+                        .back()
+                        .compare()
+        ).isTrue();
+
+        Field field = source.getClass().getDeclaredField("data");
+        field.setAccessible(true);
+        Object gotten = field.get(source);
+
+        assertThat(gotten).isEqualTo(expectedData);
     }
 
     @Test
     void shouldCheckUpdating() {
-        // TODO: restore
-//        String key = Faker.str_().random();
-//        String value = Faker.str_().random();
-//        HashMap<String, Object> expectedData = new HashMap<>() {{
-//            put(key, value);
-//        }};
-//
-//        Supplier<TestReader> readerSupplier = () -> {
-//            Result<Map<String, Object>> result = DefaultResultBuilder.<Map<String, Object>>ok(expectedData);
-//            TestReader reader = Mockito.mock(TestReader.class);
-//            Mockito
-//                    .when(reader.read())
-//                    .thenReturn(result);
-//            return reader;
-//        };
-//
-//        AtomicReference<Object> holder = new AtomicReference<>();
-//        Supplier<TestStringProperty> propertySupplier = () -> {
-//            TestStringProperty property = Mockito.mock(TestStringProperty.class);
-//            Mockito
-//                    .when(property.set(Mockito.any()))
-//                    .thenAnswer(new Answer<Result<String>>() {
-//                        @Override
-//                        public Result<String> answer(InvocationOnMock invocationOnMock) throws Throwable {
-//                            holder.set(invocationOnMock.getArgument(0));
-//                            return null;
-//                        }
-//                    });
-//            Mockito.when(property.getName()).thenReturn(key);
-//
-//            return property;
-//        };
-//
-//        TestStringProperty property = propertySupplier.get();
-//        PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
-//        source.register(property);
-//        source.update();
-//        Result<Object> result = source.update();
-//
-//        assertThat(
-//                Results.comparator(result)
-//                        .isSuccess()
-//                        .value(null)
-//                        .seedsComparator()
-//                        .isNull()
-//                        .back()
-//                        .compare()
-//        ).isTrue();
-//
-//        assertThat(holder.get()).isEqualTo(value);
+        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        String key = Faker.str_().random();
+        String value = Faker.str_().random();
+        HashMap<String, Object> expectedData = new HashMap<>() {{
+            put(key, value);
+        }};
+
+        Supplier<TestReader> readerSupplier = () -> {
+            Result<Map<String, Object>> result = DefaultResultBuilder.<Map<String, Object>>ok(expectedData);
+            TestReader reader = Mockito.mock(TestReader.class);
+            Mockito.when(reader.read()).thenReturn(result);
+            Mockito.when(reader.getId()).thenReturn(id);
+
+            return reader;
+        };
+
+        AtomicReference<Object> holder = new AtomicReference<>();
+        Supplier<TestStringProperty> propertySupplier = () -> {
+            TestStringProperty property = Mockito.mock(TestStringProperty.class);
+            Mockito
+                    .when(property.set(Mockito.any()))
+                    .thenAnswer(new Answer<Result<String>>() {
+                        @Override
+                        public Result<String> answer(InvocationOnMock invocationOnMock) throws Throwable {
+                            holder.set(invocationOnMock.getArgument(0));
+                            return null;
+                        }
+                    });
+            Mockito.when(property.getName()).thenReturn(key);
+
+            return property;
+        };
+
+        TestStringProperty property = propertySupplier.get();
+        PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
+        source.register(property);
+        DefaultWatcherEvent event = DefaultWatcherEvent.modified(id);
+        source.update(event);
+        Result<Object> result = source.update(event);
+
+        assertThat(
+                Results.comparator(result)
+                        .isSuccess()
+                        .value(null)
+                        .seedsComparator()
+                        .isNull()
+                        .back()
+                        .compare()
+        ).isTrue();
+
+        assertThat(holder.get()).isEqualTo(value);
     }
 
     @Test
