@@ -46,6 +46,7 @@ public class DefaultFileReader implements Reader<String> {
         try {
             return DefaultResultBuilder.<String>ok(Files.readString(path));
         } catch (IOException ex) {
+            ex.printStackTrace();
             return DefaultResultBuilder.<String>fail(CR.get(Code.CANNOT_READ));
         }
     }
