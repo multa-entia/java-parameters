@@ -20,12 +20,14 @@ import ru.multa.entia.parameters.impl.sources.DefaultPropertySource;
 import ru.multa.entia.parameters.impl.watchers.DefaultFileModificationWatcher;
 import ru.multa.entia.parameters.impl.watchers.DefaultWatcherEvent;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// TODO: fill readme too
+
 public class DemoTest {
     private static final String PASSWORD = "secret";
 
@@ -76,6 +78,7 @@ float_value: %s
 
         Watcher watcher = DefaultFileModificationWatcher.create(path).value();
         watcher.addListener(controller);
+        watcher.start();
 
         source.update(
                 DefaultWatcherEvent.modified(
@@ -99,14 +102,50 @@ float_value: %s
         Integer newIntValue = Faker.int_().between(10, 100);
         float newFloatValue = (float) Faker.int_().between(1000, 2000) / 10.0f;
         new Thread(() -> {
-            // TODO: rewrite file
+            String newContent = String.format(
+                    TEMPLATE,
+                    DEFAULT_ORIGINAL_TEXT,
+                    DEFAULT_ENCRYPTED_TEXT,
+                    newTextValue,
+                    newIntValue,
+                    newFloatValue);
+            try {
+                Files.writeString(path, newContent);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
         }).start();
+        Thread.sleep(50);
 
-        Thread.sleep(100);
+        System.out.println("\n### STEP 1 ###");
+        System.out.printf("original_text: %s\n", originalTextProperty.get());
+        System.out.printf("encrypted_text: %s\n", encryptedTextProperty.get());
+        System.out.printf("text_value: %s\n", textValueProperty.get());
+        System.out.printf("int_value: %s\n", intValueProperty.get());
+        System.out.printf("float_value: %s\n", floatValueProperty.get());
+        assertThat(originalTextProperty.get().value()).isEqualTo(DEFAULT_ORIGINAL_TEXT);
+        assertThat(encryptedTextProperty.get().value()).isEqualTo(DEFAULT_ORIGINAL_TEXT);
+        assertThat(textValueProperty.get().value()).isEqualTo(newTextValue);
+        assertThat(intValueProperty.get().value()).isEqualTo(newIntValue);
+        assertThat(floatValueProperty.get().value()).isEqualTo(newFloatValue);
 
-        // TODO: check
-
-        // TODO: write original content
+        new Thread(() -> {
+            String newContent = String.format(
+                    TEMPLATE,
+                    DEFAULT_ORIGINAL_TEXT,
+                    DEFAULT_ENCRYPTED_TEXT,
+                    DEFAULT_TEXT_VALUE,
+                    DEFAULT_INT_VALUE,
+                    DEFAULT_FLOAT_VALUE);
+            try {
+                Files.writeString(path, newContent);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }).start();
+        Thread.sleep(50);
     }
 
     private Path computeTestFilePath() {
