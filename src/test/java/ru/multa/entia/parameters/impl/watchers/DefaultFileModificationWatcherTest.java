@@ -11,7 +11,7 @@ import ru.multa.entia.fakers.impl.Faker;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.watchers.Watcher;
 import ru.multa.entia.parameters.api.watchers.WatcherListener;
-import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -37,7 +37,7 @@ class DefaultFileModificationWatcherTest {
 
     @Test
     void shouldCheckIdGetting() {
-        DefaultId.Ids type = DefaultId.Ids.FILE;
+        DefaultIdOld.Ids type = DefaultIdOld.Ids.FILE;
         Path path = Paths.get("projects\\multa-entia\\java-parameters");
         UUID expected = new UUID(type.getValue(), path.hashCode());
 

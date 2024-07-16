@@ -4,7 +4,7 @@ import lombok.Getter;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.watchers.Watcher;
 import ru.multa.entia.parameters.api.watchers.WatcherListener;
-import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -74,7 +74,7 @@ public class DefaultFileModificationWatcher implements Watcher {
         this.directoryPath = directoryPath;
         this.fileName = fileName;
         this.serviceSupplier = serviceSupplier;
-        this.id = DefaultId.createIdForFile(path);
+        this.id = DefaultIdOld.createIdForFile(path);
     }
 
     @Override

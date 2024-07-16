@@ -13,7 +13,7 @@ import ru.multa.entia.parameters.impl.adapters.DefaultIntegerPropertyAdapter;
 import ru.multa.entia.parameters.impl.adapters.DefaultStringPropertyAdapter;
 import ru.multa.entia.parameters.impl.controllers.DefaultParametersController;
 import ru.multa.entia.parameters.impl.decryptors.DefaultStringDecryptor;
-import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
 import ru.multa.entia.parameters.impl.properties.DefaultAdaptNotNullProperty;
 import ru.multa.entia.parameters.impl.readers.DefaultYmlReader;
 import ru.multa.entia.parameters.impl.sources.DefaultPropertySource;
@@ -82,7 +82,7 @@ float_value: %s
 
         source.update(
                 DefaultWatcherEvent.modified(
-                        DefaultId.createIdForFile(path)
+                        DefaultIdOld.createIdForFile(path)
                 )
         );
 

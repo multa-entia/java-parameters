@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.readers.Reader;
-import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -80,7 +80,7 @@ class DefaultFileReaderTest {
         ).isTrue();
 
         Reader<String> reader = result.value();
-        assertThat(reader.getId()).isEqualTo(DefaultId.createIdForFile(expectedPath));
+        assertThat(reader.getId()).isEqualTo(DefaultIdOld.createIdForFile(expectedPath));
 
         Field field = reader.getClass().getDeclaredField("path");
         field.setAccessible(true);

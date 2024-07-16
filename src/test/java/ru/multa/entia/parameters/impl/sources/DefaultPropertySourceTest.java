@@ -10,7 +10,7 @@ import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.properties.Property;
 import ru.multa.entia.parameters.api.readers.Reader;
 import ru.multa.entia.parameters.api.sources.PropertySource;
-import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
 import ru.multa.entia.parameters.impl.watchers.DefaultWatcherEvent;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
@@ -188,7 +188,7 @@ class DefaultPropertySourceTest {
 
     @Test
     void shouldCheckUpdating_ifBadEventId() {
-        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        Id id = DefaultIdOld.createIdForFile(Path.of("/opt"));
         Supplier<TestReader> readerSupplier = () -> {
             TestReader reader = Mockito.mock(TestReader.class);
             Mockito.when(reader.getId()).thenReturn(id);
@@ -197,7 +197,7 @@ class DefaultPropertySourceTest {
         };
 
         PropertySource source = DefaultPropertySource.builder().reader(readerSupplier.get()).build().value();
-        Result<Object> result = source.update(DefaultWatcherEvent.modified(DefaultId.createIdForFile(Path.of("/etc"))));
+        Result<Object> result = source.update(DefaultWatcherEvent.modified(DefaultIdOld.createIdForFile(Path.of("/etc"))));
 
         assertThat(
                 Results.comparator(result)
@@ -211,7 +211,7 @@ class DefaultPropertySourceTest {
 
     @Test
     void shouldCheckUpdating_ifBadEventKind() {
-        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        Id id = DefaultIdOld.createIdForFile(Path.of("/opt"));
         Supplier<TestReader> readerSupplier = () -> {
             TestReader reader = Mockito.mock(TestReader.class);
             Mockito.when(reader.getId()).thenReturn(id);
@@ -234,7 +234,7 @@ class DefaultPropertySourceTest {
 
     @Test
     void shouldCheckUpdating_ifReaderRetFail() {
-        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        Id id = DefaultIdOld.createIdForFile(Path.of("/opt"));
         Supplier<TestReader> readerSupplier = () -> {
             Result<Map<String, Object>> result = DefaultResultBuilder.<Map<String, Object>>fail(Faker.str_().random());
             TestReader reader = Mockito.mock(TestReader.class);
@@ -261,7 +261,7 @@ class DefaultPropertySourceTest {
     @SneakyThrows
     @Test
     void shouldCheckUpdating_ifReaderRetFailOnSecondTime() {
-        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        Id id = DefaultIdOld.createIdForFile(Path.of("/opt"));
         HashMap<String, Object> expectedData = new HashMap<>() {{
             put(Faker.str_().random(), Faker.str_().random());
         }};
@@ -310,7 +310,7 @@ class DefaultPropertySourceTest {
 
     @Test
     void shouldCheckUpdating() {
-        Id id = DefaultId.createIdForFile(Path.of("/opt"));
+        Id id = DefaultIdOld.createIdForFile(Path.of("/opt"));
         String key = Faker.str_().random();
         String value = Faker.str_().random();
         HashMap<String, Object> expectedData = new HashMap<>() {{
@@ -365,7 +365,7 @@ class DefaultPropertySourceTest {
 
     @Test
     void shouldCheckIdGetting() {
-        Id expectedId = DefaultId.createIdForFile(Path.of("/opt"));
+        Id expectedId = DefaultIdOld.createIdForFile(Path.of("/opt"));
         Supplier<TestReader> readerSupplier = () -> {
             TestReader reader = Mockito.mock(TestReader.class);
             Mockito.when(reader.getId()).thenReturn(expectedId);

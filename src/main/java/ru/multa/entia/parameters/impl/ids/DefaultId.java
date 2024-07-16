@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import ru.multa.entia.parameters.api.ids.Id;
 
 import java.nio.file.Path;
-import java.util.UUID;
 
+@RequiredArgsConstructor
 @EqualsAndHashCode
 public class DefaultId implements Id {
     @Getter
@@ -19,26 +19,20 @@ public class DefaultId implements Id {
         private final int value;
     }
 
-    public static Id createIdForFile(Path path) {
-        return new DefaultId(Ids.FILE, path);
+    public static Id createIdForEnvVar(final Object... optionalKeys) {
+        return new DefaultId(Ids.ENV_VARS, "", optionalKeys);
     }
 
-    public static Id createIdForEnvVar() {
-        return new DefaultId(Ids.ENV_VARS, "");
+    public static Id createIdForFile(final Path path, final Object... optionalKeys) {
+        return new DefaultId(Ids.FILE, path, optionalKeys);
     }
 
-    public static Id createIdForEnvVar(final Object key) {
-        return new DefaultId(Ids.ENV_VARS, key);
-    }
-
-    private final UUID value;
-
-    private DefaultId(final Ids type, final Object key) {
-        this.value = new UUID(type.getValue(), key.hashCode());
-    }
+    private final Ids type;
+    private final Object key;
+    private final Object[] optionalKeys;
 
     @Override
-    public UUID get() {
-        return value;
+    public int get() {
+        return hashCode();
     }
 }

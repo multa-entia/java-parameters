@@ -6,7 +6,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.readers.Reader;
-import ru.multa.entia.parameters.impl.ids.DefaultId;
+import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -31,7 +31,8 @@ public class DefaultYmlReader implements Reader<Map<String, Object>> {
         CR.update(Code.SYNTAX_ERROR, "parameters:yml-reader.default:syntax-error");
     }
 
-    private static final String PATH_TEMPLATE = "yml://%s";
+    // TODO: del
+//    private static final String PATH_TEMPLATE = "yml://%s";
 
     public static Builder builder () {
         return new Builder();
@@ -88,9 +89,7 @@ public class DefaultYmlReader implements Reader<Map<String, Object>> {
         }
 
         public Result<Reader<Map<String, Object>>> build() {
-//            id = Objects.requireNonNullElse(id, DefaultId.createIdForFile(Path.of(String.format(PATH_TEMPLATE, path))));
-            // TODO: !!!
-            id = Objects.requireNonNullElse(id, DefaultId.createIdForFile(path));
+            id = Objects.requireNonNullElse(id, DefaultIdOld.createIdForFile(path));
             if (textReader == null && path != null) {
                 textReader = DefaultFileReader.builder().path(path).id(id).build().value();
             }
