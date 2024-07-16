@@ -11,7 +11,7 @@ import ru.multa.entia.fakers.impl.Faker;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.watchers.Watcher;
 import ru.multa.entia.parameters.api.watchers.WatcherListener;
-import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
+import ru.multa.entia.parameters.impl.ids.DefaultId;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -20,8 +20,8 @@ import ru.multa.entia.results.utils.Results;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.*;
+import java.util.Arrays;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -37,13 +37,12 @@ class DefaultFileModificationWatcherTest {
 
     @Test
     void shouldCheckIdGetting() {
-        DefaultIdOld.Ids type = DefaultIdOld.Ids.FILE;
+        DefaultId.Ids type = DefaultId.Ids.FILE;
         Path path = Paths.get("projects\\multa-entia\\java-parameters");
-        UUID expected = new UUID(type.getValue(), path.hashCode());
 
-        Id gotten = DefaultFileModificationWatcher.create(path).value().getId();
+        Id gotten = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value().getId();
 
-        assertThat(gotten.get()).isEqualTo(expected);
+        assertThat(gotten.get()).isEqualTo(computeTestHash(type, path));
     }
 
     @ParameterizedTest
@@ -54,7 +53,7 @@ class DefaultFileModificationWatcherTest {
     },
     ignoreLeadingAndTrailingWhitespace = false)
     void shouldCheckCreation_ifBothNull(Path initPath) {
-        Result<Watcher> result = DefaultFileModificationWatcher.create(initPath);
+        Result<Watcher> result = DefaultFileModificationWatcher.create(initPath, DefaultId.createIdForFile(initPath));
 
         assertThat(
                 Results.comparator(result)
@@ -74,7 +73,7 @@ class DefaultFileModificationWatcherTest {
         String expectedFileName = "text.txt";
 
         Path path = Paths.get(String.format("%s\\%s", expectedDirectoryPath, expectedFileName));
-        Result<Watcher> result = DefaultFileModificationWatcher.create(path);
+        Result<Watcher> result = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path));
 
         assertThat(
                 Results.comparator(result)
@@ -105,7 +104,7 @@ class DefaultFileModificationWatcherTest {
     void shouldCheckStarting() {
         Path path = getPathToTestFile();
 
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value();
         Result<Object> result = watcher.start();
         assertThat(
                 Results.comparator(result)
@@ -133,7 +132,7 @@ class DefaultFileModificationWatcherTest {
     void shouldCheckStarting_ifAlreadyStarted() {
         Path path = getPathToTestFile();
 
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value();
         watcher.start();
         Result<Object> result = watcher.start();
 
@@ -152,7 +151,7 @@ class DefaultFileModificationWatcherTest {
     void shouldCheckStopping_ifAlreadyStopped() {
         Path path = getPathToTestFile();
 
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value();
         Result<Object> result = watcher.stop();
 
         assertThat(
@@ -171,7 +170,7 @@ class DefaultFileModificationWatcherTest {
     void shouldCheckStopping() {
         Path path = getPathToTestFile();
 
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value();
         watcher.start();
         Result<Object> result = watcher.stop();
 
@@ -204,7 +203,7 @@ class DefaultFileModificationWatcherTest {
     void shouldCheckListenerAddition() {
         int quantity = Faker.int_().between(10, 20);
         Path path = getPathToTestFile();
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value();
 
         for (int i = 0; i < quantity; i++) {
             Result<Object> result = watcher.addListener(WATCHER_LISTENER_SUPPLIER.get());
@@ -232,7 +231,7 @@ class DefaultFileModificationWatcherTest {
     @Test
     void shouldCheckListenerAddition_ifItIsAdded() {
         Path path = getPathToTestFile();
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value();
 
         WatcherListener listener = WATCHER_LISTENER_SUPPLIER.get();
         watcher.addListener(listener);
@@ -260,7 +259,7 @@ class DefaultFileModificationWatcherTest {
     @Test
     void shouldCheckListenerRemoving() {
         Path path = getPathToTestFile();
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value();
 
         WatcherListener listener = WATCHER_LISTENER_SUPPLIER.get();
         watcher.addListener(listener);
@@ -286,7 +285,7 @@ class DefaultFileModificationWatcherTest {
     @Test
     void shouldCheckListenerRemoving_ifItIsAbsence() {
         Path path = getPathToTestFile();
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value();
 
         WatcherListener listener = WATCHER_LISTENER_SUPPLIER.get();
         Result<Object> result = watcher.removeListener(listener);
@@ -332,7 +331,7 @@ class DefaultFileModificationWatcherTest {
             }
         };
 
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, DefaultId.createIdForFile(path)).value();
         watcher.addListener(watcherListenerSupplier.get());
 
         watcher.start();
@@ -354,5 +353,16 @@ class DefaultFileModificationWatcherTest {
                 + getClass().getPackageName().replace('.', '\\')
                 + "\\" + getClass().getSimpleName() + ".txt";
         return Path.of(path);
+    }
+
+    private static int computeTestHash(final DefaultId.Ids type,
+                                       final Object key,
+                                       final Object... optionalKeys){
+        final int PRIME = 59;
+        int result = 1;
+        result = result * PRIME + (type == null ? 43 : type.hashCode());
+        result = result * PRIME + (key == null ? 43 : key.hashCode());
+        result = result * PRIME + Arrays.deepHashCode(optionalKeys);
+        return result;
     }
 }

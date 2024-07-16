@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import ru.multa.entia.fakers.impl.Faker;
 import ru.multa.entia.parameters.api.controllers.ParametersController;
+import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.readers.Reader;
 import ru.multa.entia.parameters.api.sources.PropertySource;
 import ru.multa.entia.parameters.api.watchers.Watcher;
@@ -13,7 +14,7 @@ import ru.multa.entia.parameters.impl.adapters.DefaultIntegerPropertyAdapter;
 import ru.multa.entia.parameters.impl.adapters.DefaultStringPropertyAdapter;
 import ru.multa.entia.parameters.impl.controllers.DefaultParametersController;
 import ru.multa.entia.parameters.impl.decryptors.DefaultStringDecryptor;
-import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
+import ru.multa.entia.parameters.impl.ids.DefaultId;
 import ru.multa.entia.parameters.impl.properties.DefaultAdaptNotNullProperty;
 import ru.multa.entia.parameters.impl.readers.DefaultYmlReader;
 import ru.multa.entia.parameters.impl.sources.DefaultPropertySource;
@@ -61,9 +62,11 @@ float_value: %s
                 = new DefaultAdaptNotNullProperty<>("int_value", new DefaultIntegerPropertyAdapter());
         DefaultAdaptNotNullProperty<Float> floatValueProperty
                 = new DefaultAdaptNotNullProperty<>("float_value", new DefaultFloatPropertyAdapter());
-        Path path = computeTestFilePath();
 
-        Reader<Map<String, Object>> reader = DefaultYmlReader.builder().path(path).build().value();
+        Path path = computeTestFilePath();
+        Id id = DefaultId.createIdForFile(path, "config");
+
+        Reader<Map<String, Object>> reader = DefaultYmlReader.builder().path(path).id(id).build().value();
         PropertySource source = DefaultPropertySource.builder().reader(reader).build().value();
 
         ParametersController controller = DefaultParametersController.builder()
@@ -76,15 +79,11 @@ float_value: %s
                 .value();
         controller.start();
 
-        Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+        Watcher watcher = DefaultFileModificationWatcher.create(path, id).value();
         watcher.addListener(controller);
         watcher.start();
 
-        source.update(
-                DefaultWatcherEvent.modified(
-                        DefaultIdOld.createIdForFile(path)
-                )
-        );
+        source.update(DefaultWatcherEvent.modified(id));
 
         System.out.println("\n### STEP 0 ###");
         System.out.printf("original_text: %s\n", originalTextProperty.get());

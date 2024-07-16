@@ -14,7 +14,13 @@ int_value: 123
 float_value: 123.456
 ```
 
-We may create several property-object/
+For access to file we need path and id
+```java
+Path path = computeTestFilePath();
+Id id = DefaultId.createIdForFile(path, "config");
+```
+
+We may create several property-object
 ```java
 DefaultAdaptNotNullProperty<String> originalTextProperty
         = new DefaultAdaptNotNullProperty<>("original_text", new DefaultStringPropertyAdapter());
@@ -33,7 +39,7 @@ DefaultAdaptNotNullProperty<Float> floatValueProperty
 Next step, we are creating source of properties
 ```java
 // path - path to config file
-Reader<Map<String, Object>> reader = DefaultYmlReader.builder().path(path).build().value();
+Reader<Map<String, Object>> reader = DefaultYmlReader.builder().path(path).id(id).build().value();
 PropertySource source = DefaultPropertySource.builder().reader(reader).build().value();
 ```
 
@@ -50,16 +56,12 @@ ParametersController controller = DefaultParametersController.builder()
     .value();
 controller.start();
 
-Watcher watcher = DefaultFileModificationWatcher.create(path).value();
+Watcher watcher = DefaultFileModificationWatcher.create(path, id).value();
 watcher.addListener(controller);
 watcher.start();
 ```
 
 For first config-file reading we may call next:
 ```java
-source.update(
-        DefaultWatcherEvent.modified(
-                DefaultId.createIdForFile(path)
-        )
-);
+source.update(DefaultWatcherEvent.modified(id));
 ```

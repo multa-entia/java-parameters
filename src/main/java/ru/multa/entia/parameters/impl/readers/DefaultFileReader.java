@@ -4,7 +4,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.readers.Reader;
-import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -13,7 +12,6 @@ import ru.multa.entia.results.impl.result.DefaultResultBuilder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
 @EqualsAndHashCode
 public class DefaultFileReader implements Reader<String> {
@@ -67,10 +65,7 @@ public class DefaultFileReader implements Reader<String> {
 
         public Result<Reader<String>> build() {
             return path != null
-                    ? DefaultResultBuilder.<Reader<String>>ok(
-                            new DefaultFileReader(
-                                    path,
-                                    Objects.requireNonNullElse(id, DefaultIdOld.createIdForFile(path))))
+                    ? DefaultResultBuilder.<Reader<String>>ok(new DefaultFileReader(path, id))
                     : DefaultResultBuilder.<Reader<String>>fail(CR.get(Code.PATH_IS_NULL));
         }
     }

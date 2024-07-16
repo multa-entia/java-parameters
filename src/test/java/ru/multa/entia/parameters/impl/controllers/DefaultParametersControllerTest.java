@@ -10,7 +10,7 @@ import ru.multa.entia.parameters.api.controllers.ParametersController;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.properties.Property;
 import ru.multa.entia.parameters.api.sources.PropertySource;
-import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
+import ru.multa.entia.parameters.impl.ids.DefaultId;
 import ru.multa.entia.parameters.impl.watchers.DefaultWatcherEvent;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
@@ -126,8 +126,8 @@ class DefaultParametersControllerTest {
 
             return source;
         };
-        PropertySource source0 = propertySourceSupplier.apply(DefaultIdOld.createIdForFile(Path.of("/opt")));
-        PropertySource source1 = propertySourceSupplier.apply(DefaultIdOld.createIdForFile(Path.of("/home")));
+        PropertySource source0 = propertySourceSupplier.apply(DefaultId.createIdForFile(Path.of("/opt")));
+        PropertySource source1 = propertySourceSupplier.apply(DefaultId.createIdForFile(Path.of("/home")));
 
         HashMap<PropertySource, Set<Property<?>>> expectedHolder = new HashMap<>() {{
             put(source0, Set.of(property00, property01));
@@ -242,8 +242,8 @@ class DefaultParametersControllerTest {
 
     @Test
     void shouldCheckListenerNotification_ifPropertySourceAbsence() {
-        Id nonExistId = DefaultIdOld.createIdForFile(Path.of("/home"));
-        Id existId = DefaultIdOld.createIdForFile(Path.of("/opt"));
+        Id nonExistId = DefaultId.createIdForFile(Path.of("/home"));
+        Id existId = DefaultId.createIdForFile(Path.of("/opt"));
         Supplier<PropertySource> propertySourceSupplier = () -> {
             PropertySource source = Mockito.mock(PropertySource.class);
             Mockito.when(source.getId()).thenReturn(existId);
@@ -272,7 +272,7 @@ class DefaultParametersControllerTest {
     @Test
     void shouldCheckListenerNotification_ifFailOnPropertySourceUpdating() {
         String expectedCode = Faker.str_().random();
-        Id existId = DefaultIdOld.createIdForFile(Path.of("/opt"));
+        Id existId = DefaultId.createIdForFile(Path.of("/opt"));
         Supplier<PropertySource> propertySourceSupplier = () -> {
             Result<Object> result = DefaultResultBuilder.<Object>fail(expectedCode);
             PropertySource source = Mockito.mock(PropertySource.class);
@@ -303,7 +303,7 @@ class DefaultParametersControllerTest {
     @Test
     void shouldCheckListenerNotification() {
         AtomicBoolean holder = new AtomicBoolean(false);
-        Id existId = DefaultIdOld.createIdForFile(Path.of("/opt"));
+        Id existId = DefaultId.createIdForFile(Path.of("/opt"));
         Supplier<PropertySource> propertySourceSupplier = () -> {
             PropertySource source = Mockito.mock(PropertySource.class);
             Mockito.when(source.getId()).thenReturn(existId);

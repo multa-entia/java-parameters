@@ -4,7 +4,6 @@ import lombok.Getter;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.watchers.Watcher;
 import ru.multa.entia.parameters.api.watchers.WatcherListener;
-import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -48,7 +47,7 @@ public class DefaultFileModificationWatcher implements Watcher {
 
     private ExecutorService service;
 
-    public static Result<Watcher> create(final Path path) {
+    public static Result<Watcher> create(final Path path, final Id id) {
         if (path == null) {
             return DefaultResultBuilder.<Watcher>fail(CR.get(Code.INVALID_PATH));
         }
@@ -63,18 +62,18 @@ public class DefaultFileModificationWatcher implements Watcher {
                 new DefaultFileModificationWatcher(
                         parent,
                         fileName.toString(),
-                        path,
+                        id,
                         () -> {return Executors.newSingleThreadExecutor(new WatcherThreadFactory(path));}));
     }
 
     private DefaultFileModificationWatcher(final Path directoryPath,
                                            final String fileName,
-                                           final Path path,
+                                           final Id id,
                                            final Supplier<ExecutorService> serviceSupplier) {
         this.directoryPath = directoryPath;
         this.fileName = fileName;
         this.serviceSupplier = serviceSupplier;
-        this.id = DefaultIdOld.createIdForFile(path);
+        this.id = id;
     }
 
     @Override

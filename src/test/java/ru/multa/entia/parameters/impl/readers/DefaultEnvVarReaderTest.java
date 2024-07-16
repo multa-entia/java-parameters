@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.multa.entia.fakers.impl.Faker;
 import ru.multa.entia.parameters.api.ids.Id;
 import ru.multa.entia.parameters.api.readers.Reader;
-import ru.multa.entia.parameters.impl.ids.DefaultIdOld;
+import ru.multa.entia.parameters.impl.ids.DefaultId;
 import ru.multa.entia.results.api.repository.CodeRepository;
 import ru.multa.entia.results.api.result.Result;
 import ru.multa.entia.results.impl.repository.DefaultCodeRepository;
@@ -76,7 +76,7 @@ class DefaultEnvVarReaderTest {
                         .compare()
         ).isTrue();
 
-        assertThat(result.value().getId()).isEqualTo(DefaultIdOld.createIdForEnvVar());
+        assertThat(result.value().getId()).isNull();
     }
 
     @SneakyThrows
@@ -112,7 +112,7 @@ class DefaultEnvVarReaderTest {
 
     @Test
     void shouldCheckIdGetting() {
-        Id expectedId = DefaultIdOld.createIdForEnvVar(Faker.str_().random());
+        Id expectedId = DefaultId.createIdForEnvVar(Faker.str_().random());
         Reader<Map<String, Object>> reader = DefaultEnvVarReader.builder()
                 .addVarName(Faker.str_().random())
                 .id(expectedId).build()
